@@ -34,7 +34,6 @@ struct WheelPickerSheet: View {
                     }
                 )) {
                     let currentYear = calendar.component(.year, from: HistoryManager.shared.currentDate)
-                    // Диапазон: 5 лет назад - текущий
                     ForEach((currentYear - 5)...currentYear, id: \.self) { year in
                         Text(String(format: "%d", year)).tag(year)
                     }
@@ -43,7 +42,7 @@ struct WheelPickerSheet: View {
                 .frame(maxWidth: .infinity)
             }
             .padding(.horizontal)
-
+            
             Button(action: { dismiss() }) {
                 Text("Done")
                     .font(.system(size: 18, weight: .bold, design: .rounded))
@@ -69,7 +68,6 @@ struct WheelPickerSheet: View {
         if let newDate = calendar.date(from: components), newDate <= HistoryManager.shared.currentDate {
             currentMonth = newDate
         } else {
-            // Если будущее — макс. доступная дата
             currentMonth = HistoryManager.shared.currentDate
         }
     }

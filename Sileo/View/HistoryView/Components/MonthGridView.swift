@@ -32,7 +32,7 @@ struct MonthGridView: View {
                             .font(.system(size: 18, weight: isSelected ? .bold : .medium, design: .rounded))
                             .foregroundColor(
                                 isSelected ? .white :
-                                isFuture ? .secondary.opacity(0.2) :
+                                    isFuture ? .secondary.opacity(0.2) :
                                     isCurrentMonth ? theme.textColor : .secondary.opacity(0.3)
                             )
                     }
@@ -43,7 +43,6 @@ struct MonthGridView: View {
                             withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
                                 selectedDate = date
                                 if !isCurrentMonth {
-                                    // Нормализуем дату на начало месяца
                                     let components = calendar.dateComponents([.year, .month], from: date)
                                     if let newMonthStart = calendar.date(from: components) {
                                         currentMonth = newMonthStart
@@ -53,7 +52,7 @@ struct MonthGridView: View {
                             let generator = UIImpactFeedbackGenerator(style: .light)
                             generator.impactOccurred()
                         } else {
-                             UINotificationFeedbackGenerator().notificationOccurred(.error)
+                            UINotificationFeedbackGenerator().notificationOccurred(.error)
                         }
                     }
                 }

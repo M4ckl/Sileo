@@ -1,11 +1,9 @@
 import SwiftUI
 
-// --- МОДЕЛИ ДАННЫХ ---
-
 struct PauseSession: Codable, Identifiable {
     let id: UUID
-    let date: Date           // Точное время завершения
-    let durationMinutes: Int // Длительность
+    let date: Date
+    let durationMinutes: Int
 }
 
 struct DailyData: Codable {
@@ -15,14 +13,9 @@ struct DailyData: Codable {
     var sessions: [PauseSession] = []
 }
 
-// --- МЕНЕДЖЕР ---
-
 @Observable
 class HistoryManager {
     static let shared = HistoryManager()
-    
-    // Свойство currentDate больше не нужно, используем Date() напрямую
-    // или можно оставить для удобства как:
     var currentDate: Date { Date() }
     
     var history: [PauseSession] {
@@ -59,7 +52,7 @@ class HistoryManager {
     var currentStreak: Int {
         var streak = 0
         let calendar = Calendar.current
-        var checkDate = Date() // Берем текущую дату
+        var checkDate = Date()
         
         while true {
             let data = getData(for: checkDate)
@@ -72,8 +65,6 @@ class HistoryManager {
         }
         return streak
     }
-    
-    // --- ЛОГИКА ---
     
     func getData(for date: Date) -> DailyData {
         let key = "history_" + dateKey(for: date)

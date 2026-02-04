@@ -6,10 +6,10 @@ import Observation
 class PauseEngine {
     
     enum PauseState {
-        case idle       // Выбор времени
-        case running    // Идет время
-        case paused     // Пауза (заморозка)
-        case finished   // Галочка
+        case idle
+        case running
+        case paused
+        case finished
     }
     
     var state: PauseState = .idle
@@ -20,61 +20,48 @@ class PauseEngine {
     private var timer: Timer?
     private let userManager = UserManager.shared
     
-    // --- АУДИО КОМПОНЕНТЫ ---
     private var audioPlayer: AVAudioPlayer?
-    private var volumeTimer: Timer? // Таймер для плавного затухания звука
+    private var volumeTimer: Timer?
     
     private let haptic = UIImpactFeedbackGenerator(style: .soft)
     private let notification = UINotificationFeedbackGenerator()
     
-    private var todayKey: String {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "yyyy-MM-dd"
-        return "daily_total_" + formatter.string(from: Date())
-    }
-    
     var todayUsageCount: Int {
-            HistoryManager.shared.getData(for: HistoryManager.shared.currentDate).sessionsCount
-        }
+        HistoryManager.shared.getData(for: HistoryManager.shared.currentDate).sessionsCount
+    }
     
     var totalMinutesToday: Int {
-            HistoryManager.shared.getData(for: HistoryManager.shared.currentDate).totalMinutes
-        }
-    
-    init() {
-        setupAudioSession() // Настройка звука при запуске
+        HistoryManager.shared.getData(for: HistoryManager.shared.currentDate).totalMinutes
     }
     
-    // --- УПРАВЛЕНИЕ ---
+    init() {
+        setupAudioSession()
+    }
     
     func startPause() -> Bool {
-            // 1. Проверка лимитов для БЕСПЛАТНЫХ пользователей
-            if !userManager.isPremium {
-                let todaySessions = HistoryManager.shared.getData(for: HistoryManager.shared.currentDate).sessionsCount
-                if todaySessions >= userManager.freeDailyLimit {
-                    return false // Запрещаем старт, нужно показать Paywall
-                }
+        if !userManager.isPremium {
+            let todaySessions = HistoryManager.shared.getData(for: HistoryManager.shared.currentDate).sessionsCount
+            if todaySessions >= userManager.freeDailyLimit {
+                return false
             }
-            
-            if state == .idle {
-                remainingSeconds = selectedMinutes * 60
-            }
-           
-            withAnimation(.spring(response: 0.6, dampingFraction: 0.7)) {
-                state = .running
-            }
-           
-            playAmbientSound()
-            startTimer()
-            return true
         }
+        
+        if state == .idle {
+            remainingSeconds = selectedMinutes * 60
+        }
+        
+        withAnimation(.spring(response: 0.6, dampingFraction: 0.7)) {
+            state = .running
+        }
+        
+        playAmbientSound()
+        startTimer()
+        return true
+    }
     
     func togglePause() {
         if state == .running {
-            // Ставим на паузу
             timer?.invalidate()
-            
-            // Ставим звук на паузу (плавно)
             pauseAmbientSound()
             
             withAnimation(.easeInOut(duration: 0.3)) {
@@ -84,8 +71,6 @@ class PauseEngine {
             haptic.impactOccurred(intensity: 0.6)
             
         } else if state == .paused {
-            // Возобновляем
-            // Возобновляем звук
             playAmbientSound()
             startTimer()
             
@@ -118,8 +103,6 @@ class PauseEngine {
     
     private func finishSession() {
         timer?.invalidate()
-        
-        // Останавливаем звук (плавно)
         stopAmbientSound()
         
         HistoryManager.shared.addSession(minutes: selectedMinutes)
@@ -137,8 +120,6 @@ class PauseEngine {
         }
     }
     
-    // --- БЕЗЕЛЬ И ВРЕМЯ ---
-    
     func updateTimeFromBezel(angle: Double) {
         let normalizedAngle = angle < 0 ? angle + 360 : angle
         let p = normalizedAngle / 360.0
@@ -152,18 +133,15 @@ class PauseEngine {
     }
     
     func reset() {
-        stopAmbientSound() // На всякий случай глушим звук
+        stopAmbientSound()
         withAnimation {
             state = .idle
             progress = 0
         }
     }
     
-    // --- ЛОГИКА АУДИО (AVAudioPlayer) ---
-    
     private func setupAudioSession() {
         do {
-            // .playback позволяет играть звук даже в беззвучном режиме и при блокировке экрана
             try AVAudioSession.sharedInstance().setCategory(.playback, mode: .default)
             try AVAudioSession.sharedInstance().setActive(true)
         } catch {
@@ -172,60 +150,67 @@ class PauseEngine {
     }
     
     private func playAmbientSound() {
-            if let player = audioPlayer, player.isPlaying { return }
-           
-            // Берем имя файла из менеджера
-            let soundFilename = userManager.getCurrentSound().filename
+        if let player = audioPlayer, player.isPlaying { return }
         
-            if soundFilename.isEmpty {
-                // Если вдруг что-то играло — останавливаем
-                if let player = audioPlayer, player.isPlaying {
-                    fadeVolume(to: 0.0, duration: 0.5) { [weak self] in
-                        self?.audioPlayer?.stop()
-                    }
+        let soundFilename = userManager.getCurrentSound().filename
+        
+        if soundFilename.isEmpty {
+            if let player = audioPlayer, player.isPlaying {
+                fadeVolume(to: 0.0, duration: 0.5) { [weak self] in
+                    self?.audioPlayer?.stop()
                 }
-                return // ⛔️ Выходим из функции, дальше не идем
+            }
+            return
+        }
+        
+        do {
+            var url = Bundle.main.url(forResource: soundFilename, withExtension: "m4a")
+            if url == nil {
+                url = Bundle.main.url(forResource: soundFilename, withExtension: "mp3")
             }
             
-            // Создаем плеер заново, если файл изменился или плеера нет
-            // (Упрощенно: пересоздаем всегда для надежности смены трека)
-            do {
-                if let url = Bundle.main.url(forResource: soundFilename, withExtension: "mp3") {
-                    audioPlayer = try AVAudioPlayer(contentsOf: url)
+            if let soundUrl = url {
+                if audioPlayer == nil || audioPlayer?.url != soundUrl {
+                    audioPlayer = try AVAudioPlayer(contentsOf: soundUrl)
                     audioPlayer?.numberOfLoops = -1
                     audioPlayer?.prepareToPlay()
-                } else {
-                    print("Sound file \(soundFilename) not found")
                 }
-            } catch {
-                print("Audio Error: \(error)")
+                
+                if audioPlayer?.isPlaying == false {
+                    audioPlayer?.volume = 0
+                    audioPlayer?.play()
+                    fadeVolume(to: 1.0, duration: 2.0)
+                }
+            } else {
+                print("Sound file \(soundFilename) not found")
             }
-           
-            audioPlayer?.volume = 0
-            audioPlayer?.play()
-            fadeVolume(to: 1.0, duration: 2.0)
+        } catch {
+            print("Audio Error: \(error)")
         }
+    }
     
     private func pauseAmbientSound() {
-        // Плавно уводим громкость в 0, потом ставим паузу
         fadeVolume(to: 0.0, duration: 0.5) { [weak self] in
             self?.audioPlayer?.pause()
         }
     }
     
     private func stopAmbientSound() {
-        // Плавно уводим громкость в 0, потом стоп
         fadeVolume(to: 0.0, duration: 2.0) { [weak self] in
             self?.audioPlayer?.stop()
-            self?.audioPlayer = nil // Освобождаем память, чтобы при следующем старте создать заново
+            self?.audioPlayer = nil
         }
     }
     
-    // Хелпер для плавного изменения громкости
     private func fadeVolume(to targetVolume: Float, duration: TimeInterval, completion: (() -> Void)? = nil) {
-        volumeTimer?.invalidate() // Сбрасываем старый таймер если был
+        volumeTimer?.invalidate()
         
         guard let player = audioPlayer else { return }
+        
+        if abs(player.volume - targetVolume) < 0.01 {
+            completion?()
+            return
+        }
         
         let steps = 20
         let stepDuration = duration / Double(steps)
@@ -242,7 +227,7 @@ class PauseEngine {
             
             currentStep += 1
             let newVolume = startVolume + (volumeChange * Float(currentStep) / Float(steps))
-            player.volume = max(0.0, min(1.0, newVolume)) // Держим в рамках 0...1
+            player.volume = max(0.0, min(1.0, newVolume))
             
             if currentStep >= steps {
                 timer.invalidate()

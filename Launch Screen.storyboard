@@ -16,7 +16,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" image="CircleIcon" highlightedImage="CircleIcon" translatesAutoresizingMaskIntoConstraints="NO" id="68o-LA-Ps5">
-                                <rect key="frame" x="166" y="412" width="60" height="60"/>
+                                <rect key="frame" x="166" y="396" width="60" height="60"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                             </imageView>
                         </subviews>

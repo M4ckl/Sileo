@@ -4,19 +4,16 @@ struct HistoryView: View {
     @Environment(\.dismiss) var dismiss
     @Environment(\.colorScheme) var colorScheme
     @Environment(UserManager.self) var userManager
-        
+    
     var theme: AppTheme { userManager.getCurrentTheme() }
     
-    // Выбранный день (для статистики)
     @State private var selectedDate: Date = Date()
     
-    // Текущий месяц (для скролла)
     @State private var currentMonth: Date = {
         let components = Calendar.current.dateComponents([.year, .month], from: HistoryManager.shared.currentDate)
         return Calendar.current.date(from: components)!
     }()
     
-    // Модалка выбора даты
     @Namespace private var animation
     @State private var showWheelPicker = false
     @State private var currentStatsPage = 0
@@ -25,7 +22,6 @@ struct HistoryView: View {
     private let daysOfWeek = ["S", "M", "T", "W", "T", "F", "S"]
     private let columns = Array(repeating: GridItem(.flexible()), count: 7)
     
-    // Список месяцев для карусели
     @State private var monthsList: [Date] = []
     
     var stats: DailyData {
@@ -39,13 +35,8 @@ struct HistoryView: View {
             
             VStack(spacing: 0) {
                 
-                // 1. ПОДНЯЛИ ВЕСЬ КОНТЕНТ ВЫШЕ
-                // Было 40, стало 20.
                 Spacer().frame(height: 20)
                 
-                // ==========================================
-                // БЛОК 1: КАРУСЕЛЬ МЕСЯЦЕВ (HEADER)
-                // ==========================================
                 ZStack {
                     RoundedRectangle(cornerRadius: 30)
                         .glassEffect(.clear)
@@ -115,12 +106,8 @@ struct HistoryView: View {
                 .padding(.horizontal, 20)
                 .shadow(color: Color.black.opacity(0.05), radius: 10, y: 5)
                 
-                // 2. РАССТОЯНИЕ МЕЖДУ МЕСЯЦАМИ И КАЛЕНДАРЕМ (12px)
                 Spacer().frame(height: 12)
                 
-                // ==========================================
-                // БЛОК 2: КАЛЕНДАРЬ
-                // ==========================================
                 VStack(spacing: 15) {
                     HStack {
                         ForEach(daysOfWeek, id: \.self) { day in
@@ -152,29 +139,21 @@ struct HistoryView: View {
                 .shadow(color: Color.black.opacity(0.1), radius: 10, y: 5)
                 .frame(height: 340)
                 
-                // 3. РАССТОЯНИЕ ОТ КАЛЕНДАРЯ ДО ДИВАЙДЕРА (14px)
                 Spacer().frame(height: 14)
                 
-                // 4. НОВЫЙ ДИЗАЙН ДИВАЙДЕРА
                 Capsule()
-                    .fill(theme.textColor.opacity(0.1)) // Полупрозрачный цвет текста
-                    .frame(height: 2) // Толще
-                    .padding(.horizontal, 40) // Не касается краев экрана
+                    .fill(theme.textColor.opacity(0.1))
+                    .frame(height: 2)
+                    .padding(.horizontal, 40)
                 
-                // 5. РАССТОЯНИЕ ОТ ДИВАЙДЕРА ДО СТАТИСТИКИ (14px)
                 Spacer().frame(height: 14)
                 
-                // ==========================================
-                // БЛОК 3: СТАТИСТИКА
-                // ==========================================
                 ZStack {
-                    // Фон блока
                     RoundedRectangle(cornerRadius: 30)
                         .fill(Color.white.opacity(colorScheme == .dark ? 0.1 : 1))
                         .shadow(color: Color.black.opacity(0.1), radius: 10, y: 5)
                     
                     VStack(spacing: 0) {
-                        // Контент (Табы)
                         TabView(selection: $currentStatsPage) {
                             statsOverview
                                 .tag(0)
@@ -185,7 +164,6 @@ struct HistoryView: View {
                         .tabViewStyle(.page(indexDisplayMode: .never))
                         .animation(.easeInOut(duration: 0.3), value: currentStatsPage)
                         
-                        // Индикаторы (Точки) внизу
                         HStack(spacing: 6) {
                             ForEach(0..<2) { index in
                                 Capsule()
@@ -194,17 +172,15 @@ struct HistoryView: View {
                                     .animation(.spring(), value: currentStatsPage)
                             }
                         }
-                        .padding(.bottom, 12) // Отступ от самого низа белого блока
+                        .padding(.bottom, 12)
                     }
                 }
-                .frame(height: 180) // ⚠️ Чуть увеличил высоту (было 160), чтобы график влез нормально
+                .frame(height: 180)
                 .padding(.horizontal, 20)
                 .animation(.easeInOut(duration: 0.3), value: selectedDate)
                 
-                // 6. ПРИЖИМАЕМ ВСЁ ВНИЗ
                 Spacer(minLength: 0)
                 
-                // --- НИЖНЯЯ ПАНЕЛЬ ---
                 HStack {
                     Text("HISTORY")
                         .font(.system(size: 16, weight: .medium, design: .rounded))
@@ -228,8 +204,6 @@ struct HistoryView: View {
                     }
                 }
                 .padding(.horizontal, 20)
-                // 7. МИНИМАЛЬНЫЙ ОТСТУП, ЧТОБЫ БЫЛО МАКСИМАЛЬНО НИЗКО
-                // safeAreaPadding сделает остальную работу (поднимет над Home Indicator)
                 .padding(.bottom, 0)
             }
             .safeAreaPadding(.bottom)
@@ -242,10 +216,6 @@ struct HistoryView: View {
             WheelPickerSheet(currentMonth: $currentMonth, theme: theme)
         }
     }
-    
-    // ... [ОСТАЛЬНОЙ КОД БЕЗ ИЗМЕНЕНИЙ] ...
-    // Скопируй сюда функции generateMonths, statsOverview, sessionsGraph,
-    // а также структуры MonthGridView и WheelPickerSheet из предыдущего кода.
     
     func generateMonths() {
         let now = Date()
@@ -267,66 +237,58 @@ struct HistoryView: View {
     }
     
     var statsOverview: some View {
-            VStack(spacing: 0) {
-                // 1. ЗАГОЛОВОК (Идентичен Графику)
-                HStack {
-                    Text(dateString(date: selectedDate))
-                        .font(.system(size: 14, weight: .medium, design: .rounded)) // Как в графике
-                        .foregroundColor(.secondary)
-                        .textCase(.uppercase)
-                    Spacer()
-                }
-                .padding(.horizontal, 20)
-                .padding(.top, 15)
-                
-                // Отступ, чтобы цифры были по центру по вертикали
-                Spacer()
-                
-                // 2. ЦИФРЫ
-                HStack(spacing: 0) {
-                    // Левая часть (Минуты)
-                    VStack(spacing: 2) {
-                        Text("\(stats.totalMinutes)")
-                            .font(.system(size: 44, weight: .light, design: .rounded))
-                            .foregroundColor(theme.accentColor)
-                            .contentTransition(.numericText())
-                        
-                        Text("min")
-                            .font(.system(size: 11, weight: .bold, design: .rounded))
-                            .foregroundColor(.secondary.opacity(0.6))
-                            .textCase(.uppercase) // Капсом, чтобы сочеталось с заголовком
-                    }
-                    .frame(maxWidth: .infinity) // Занимает ровно половину ширины
-                    
-                    // Разделитель (Стиль как у сетки графика)
-                    RoundedRectangle(cornerRadius: 1)
-                        .fill(Color.gray.opacity(0.15))
-                        .frame(width: 2, height: 50)
-                    
-                    // Правая часть (Паузы)
-                    VStack(spacing: 2) {
-                        Text("\(stats.sessionsCount)")
-                            .font(.system(size: 44, weight: .light, design: .rounded))
-                            .foregroundColor(theme.textColor)
-                            .contentTransition(.numericText())
-                        
-                        Text("pauses")
-                            .font(.system(size: 11, weight: .bold, design: .rounded))
-                            .foregroundColor(.secondary.opacity(0.6))
-                            .textCase(.uppercase)
-                    }
-                    .frame(maxWidth: .infinity)
-                }
-                // Небольшая коррекция, чтобы оптически центр был приятнее
-                .padding(.bottom, 10)
-                
+        VStack(spacing: 0) {
+            HStack {
+                Text(dateString(date: selectedDate))
+                    .font(.system(size: 14, weight: .medium, design: .rounded))
+                    .foregroundColor(.secondary)
+                    .textCase(.uppercase)
                 Spacer()
             }
+            .padding(.horizontal, 20)
+            .padding(.top, 15)
+            
+            Spacer()
+            
+            HStack(spacing: 0) {
+                VStack(spacing: 2) {
+                    Text("\(stats.totalMinutes)")
+                        .font(.system(size: 44, weight: .light, design: .rounded))
+                        .foregroundColor(theme.accentColor)
+                        .contentTransition(.numericText())
+                    
+                    Text("min")
+                        .font(.system(size: 11, weight: .bold, design: .rounded))
+                        .foregroundColor(.secondary.opacity(0.6))
+                        .textCase(.uppercase)
+                }
+                .frame(maxWidth: .infinity)
+                
+                RoundedRectangle(cornerRadius: 1)
+                    .fill(Color.gray.opacity(0.15))
+                    .frame(width: 2, height: 50)
+                
+                VStack(spacing: 2) {
+                    Text("\(stats.sessionsCount)")
+                        .font(.system(size: 44, weight: .light, design: .rounded))
+                        .foregroundColor(theme.textColor)
+                        .contentTransition(.numericText())
+                    
+                    Text("pauses")
+                        .font(.system(size: 11, weight: .bold, design: .rounded))
+                        .foregroundColor(.secondary.opacity(0.6))
+                        .textCase(.uppercase)
+                }
+                .frame(maxWidth: .infinity)
+            }
+            .padding(.bottom, 10)
+            
+            Spacer()
         }
+    }
     
     var sessionsGraph: some View {
         VStack(spacing: 10) {
-            // Заголовок
             HStack {
                 Text("Sessions Timeline")
                     .font(.system(size: 14, weight: .medium, design: .rounded))
@@ -344,10 +306,7 @@ struct HistoryView: View {
                     .foregroundStyle(.secondary.opacity(0.5))
                 Spacer()
             } else {
-                // ГРАФИК
                 HStack(alignment: .bottom, spacing: 10) {
-                    
-                    // 1. ОСЬ Y (Время)
                     VStack(alignment: .trailing, spacing: 0) {
                         Text("60m").font(.system(size: 9, weight: .bold)).foregroundColor(.gray.opacity(0.5))
                         Spacer()
@@ -355,12 +314,10 @@ struct HistoryView: View {
                         Spacer()
                         Text("0m").font(.system(size: 9, weight: .bold)).foregroundColor(.gray.opacity(0.5))
                     }
-                    .frame(height: 80) // Высота рабочей области графика
-                    .padding(.bottom, 16) // Компенсация подписей оси X
+                    .frame(height: 80)
+                    .padding(.bottom, 16)
                     
-                    // 2. ОБЛАСТЬ СТОЛБЦОВ
                     ZStack(alignment: .bottom) {
-                        // СЕТКА (Линии)
                         VStack {
                             Divider().background(Color.gray.opacity(0.1))
                             Spacer()
@@ -371,27 +328,20 @@ struct HistoryView: View {
                         .frame(height: 80)
                         .padding(.bottom, 16)
                         
-                        // СТОЛБЦЫ
                         ScrollView(.horizontal, showsIndicators: false) {
                             HStack(alignment: .bottom, spacing: 12) {
-                                // ✅ ИСПРАВЛЕНИЕ: stats.sessions теперь массив структур PauseSession
                                 ForEach(Array(stats.sessions.enumerated()), id: \.offset) { index, session in
                                     VStack(spacing: 4) {
-                                        // Столбик
                                         ZStack(alignment: .bottom) {
-                                            // Фон столбика
                                             RoundedRectangle(cornerRadius: 4)
                                                 .fill(Color.gray.opacity(0.05))
                                                 .frame(width: 16, height: 80)
                                             
-                                            // Заполненный столбик
                                             RoundedRectangle(cornerRadius: 4)
                                                 .fill(theme.accentColor)
-                                            // ✅ Берем .durationMinutes из структуры сессии
                                                 .frame(width: 16, height: heightForBar(minutes: session.durationMinutes, maxHeight: 80))
                                         }
                                         
-                                        // Ось X (Номер паузы)
                                         Text("\(index + 1)")
                                             .font(.system(size: 9, weight: .bold))
                                             .foregroundColor(.gray.opacity(0.5))
@@ -408,13 +358,10 @@ struct HistoryView: View {
         }
     }
     
-    // Хелпер для расчета высоты
     func heightForBar(minutes: Int, maxHeight: CGFloat) -> CGFloat {
         let maxMinutes: CGFloat = 60
-        // Если минут больше 60, обрезаем график, но лучше чтобы не вылезало
         let normalizedMinutes = min(CGFloat(minutes), maxMinutes)
         let height = (normalizedMinutes / maxMinutes) * maxHeight
-        // Минимальная высота 4px, чтобы столбик было видно, даже если 1 минута
         return max(4, height)
     }
     

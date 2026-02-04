@@ -1,17 +1,15 @@
 import SwiftUI
+import StoreKit
 
 struct ManageSubscriptionView: View {
-    // ❌ Убрали binding theme
     @Environment(\.dismiss) var dismiss
     @Environment(\.colorScheme) var colorScheme
-    // ✅ 1. Добавляем Environment и AppStorage как в Ачивках
     @Environment(UserManager.self) var userManager
     @AppStorage("isDarkMode") private var isDarkMode = false
-    
-    // Анимация
+
     @State private var textOpacity: Double = 0
+    @State private var textOffset: CGFloat = 20
     
-    // ✅ 2. Вычисляем тему на лету
     var theme: AppTheme {
         userManager.getCurrentTheme()
     }
@@ -20,9 +18,8 @@ struct ManageSubscriptionView: View {
         ZStack {
             BackgroundOnlyColorsView()
                 .ignoresSafeArea()
-            
+
             VStack(spacing: 0) {
-                // ВЕРХНЯЯ ПАНЕЛЬ (Без изменений)
                 HStack {
                     Button(action: { dismiss() }) {
                         HStack(spacing: 6) {
@@ -36,62 +33,89 @@ struct ManageSubscriptionView: View {
                         .glassEffect(.clear.interactive())
                     }
                     Spacer()
-                    Text("CALM PLUS") // Исправил "СALM" на английскую C
+                    Text("MY PLAN")
                         .font(.system(size: 20, weight: .bold, design: .rounded))
                         .foregroundColor(theme.textColor)
                         .textCase(.uppercase)
                         .tracking(1)
                     Spacer()
-                    // Пустышка для баланса
                     Image(systemName: "chevron.left").opacity(0).padding()
                 }
                 .padding(.horizontal)
                 .padding(.top)
-                
-                // КОНТЕНТ
-                VStack(spacing: 20) {
-                    
-                    // Живая иконка (Без изменений расстояния)
-                    CalmPlusIcon(theme: theme)
-                        .padding(.vertical, 20)
-                    
-                    // ТЕКСТ (Увеличили spacing с 12 до 32, чтобы распределить по высоте)
-                    VStack(spacing: 32) {
-                        Text("Thank you for being here.")
-                            .font(.system(size: 24, weight: .bold, design: .serif))
-                            .foregroundStyle(theme.textColor)
-                            .minimumScaleFactor(0.8)
-                        
-                        Text("Your support helps keep Sileo calm, simple,\nand focused on creating space for pause.")
-                            .font(.system(size: 16, weight: .regular, design: .rounded))
-                            .foregroundStyle(theme.textColor.opacity(0.8))
-                            .multilineTextAlignment(.center)
+                .zIndex(1)
+
+                ScrollView(showsIndicators: false) {
+                    VStack(spacing: 0) {
+
+                        VStack(spacing: 20) {
+                            CalmPlusIcon(theme: theme)
+                                .padding(.top, 10)
+                            
+                            VStack(spacing: 12) {
+                                Text("You have full access.")
+                                    .font(.system(size: 24, weight: .bold, design: .rounded))
+                                    .foregroundStyle(theme.textColor)
+                                    .multilineTextAlignment(.center)
+
+                                HStack(spacing: 6) {
+                                    Text("Calm Plus Active")
+                                        .font(.system(size: 14, weight: .bold, design: .rounded))
+                                        .foregroundColor(theme.accentColor)
+                                        .textCase(.uppercase)
+                                        .tracking(0.5)
+                                }
+                                .padding(.vertical, 8)
+                                .padding(.horizontal, 16)
+                                .background(theme.accentColor.opacity(colorScheme == .dark ? 0.15 : 0.08))
+                                .clipShape(Capsule())
+                            }
+                        }
+                        .padding(.bottom, 30)
+                        .opacity(textOpacity)
+                        .offset(y: textOffset)
+
+                        VStack(alignment: .leading, spacing: 10) {
+                            Text("CURRENTLY ACTIVE")
+                                .font(.system(size: 12, weight: .bold, design: .rounded))
+                                .foregroundColor(theme.textColor.opacity(0.5))
+                                .padding(.leading, 10)
+                                .padding(.bottom, 5)
+                            
+                            VStack(alignment: .leading, spacing: 0) {
+                                ActiveFeatureRow(icon: "infinity", title: "Unlimited pauses", theme: theme)
+                                Divider().padding(.leading, 50).opacity(0.5)
+                                ActiveFeatureRow(icon: "paintpalette.fill", title: "All themes unlocked", theme: theme)
+                                Divider().padding(.leading, 50).opacity(0.5)
+                                ActiveFeatureRow(icon: "speaker.wave.2.fill", title: "All sounds unlocked", theme: theme)
+                                Divider().padding(.leading, 50).opacity(0.5)
+                                ActiveFeatureRow(icon: "moon.stars.fill", title: "Sleep mode access", theme: theme)
+                            }
+                            .padding(.vertical, 20)
                             .padding(.horizontal, 20)
-                            .minimumScaleFactor(0.8)
+                            .background(Color.white.opacity(colorScheme == .dark ? 0.1 : 0.8))
+                            .cornerRadius(24)
+                            .shadow(color: Color.black.opacity(0.05), radius: 10, x: 0, y: 5)
+
+                            Text("Thank you for supporting Sileo.")
+                                .font(.system(size: 14, weight: .medium, design: .rounded))
+                                .foregroundStyle(theme.textColor.opacity(0.6))
+                                .frame(maxWidth: .infinity, alignment: .center)
+                                .padding(.top, 20)
+                        }
+                        .padding(.horizontal, 20)
+                        .opacity(textOpacity)
+                        .offset(y: textOffset)
                         
-                        Text("All themes and sounds are now available,\nand you can pause as often as you need.")
-                            .font(.system(size: 16, weight: .medium, design: .rounded))
-                            .foregroundStyle(theme.accentColor)
-                            .multilineTextAlignment(.center)
-                            .padding(.horizontal, 16)
-                            .padding(.vertical, 12)
-                            .background(Color.white.opacity(colorScheme == .dark ? 0.1 : 1))
-                            .cornerRadius(20)
-                            .minimumScaleFactor(0.8)
-                        
-                        Text("Below, without any pressure,\nyou can manage your subscription.")
-                            .font(.system(size: 14, weight: .regular, design: .rounded))
-                            .foregroundStyle(theme.textColor.opacity(0.5))
-                            .multilineTextAlignment(.center)
-                            .minimumScaleFactor(0.8)
+                        Spacer(minLength: 120)
                     }
-                    .opacity(textOpacity)
                 }
-                
+            }
+
+            VStack {
                 Spacer()
                 
-                // НИЖНИЙ БЛОК
-                VStack(spacing: 16) {
+                VStack(spacing: 12) {
                     Button(action: {
                         if let url = URL(string: "https://apps.apple.com/account/subscriptions") {
                             UIApplication.shared.open(url)
@@ -104,31 +128,60 @@ struct ManageSubscriptionView: View {
                             .padding(.vertical, 18)
                             .background(theme.accentColor)
                             .cornerRadius(30)
+                            .shadow(color: Color.black.opacity(0.3), radius: 12, x: 0, y: 6)
                     }
-                    .padding(.horizontal, 30)
-                    
+
                     #if DEBUG
                     Button(action: {
                         UserManager.shared.resetSubscription()
                         dismiss()
                     }) {
                         Text("Cancel Subscription (Test Mode)")
-                            .font(.caption)
+                            .font(.system(size: 12, weight: .medium, design: .rounded))
                             .foregroundColor(.red.opacity(0.8))
                     }
-                    .padding(.bottom, 10)
+                    .padding(.bottom, 5)
                     #endif
                 }
-                .padding(.bottom, 30)
+                .padding(.horizontal, 20)
+                .padding(.bottom, 10)
             }
+            .opacity(textOpacity)
+            .offset(y: textOffset)
         }
         .navigationBarHidden(true)
-        // ✅ 3. Принудительно ставим цветовую схему
         .preferredColorScheme(isDarkMode ? .dark : .light)
         .onAppear {
-            withAnimation(.easeOut(duration: 1.0)) {
+            withAnimation(.easeOut(duration: 1.0).delay(0.2)) {
                 textOpacity = 1
+                textOffset = 0
             }
         }
+    }
+}
+
+struct ActiveFeatureRow: View {
+    let icon: String
+    let title: String
+    let theme: AppTheme
+    
+    var body: some View {
+        HStack(spacing: 16) {
+            Image(systemName: icon)
+                .font(.system(size: 20))
+                .foregroundColor(theme.accentColor)
+                .frame(width: 24)
+            
+            Text(title)
+                .font(.system(size: 16, weight: .medium, design: .rounded))
+                .foregroundColor(theme.textColor)
+            
+            Spacer()
+
+            Image(systemName: "checkmark")
+                .font(.system(size: 14, weight: .bold))
+                .foregroundColor(theme.accentColor)
+        }
+        .padding(.vertical, 12)
     }
 }

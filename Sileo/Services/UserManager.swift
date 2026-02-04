@@ -1,8 +1,6 @@
 import SwiftUI
 import Observation
 
-// --- МОДЕЛИ ---
-
 struct AppSound: Identifiable, Equatable {
     let id: String
     let name: String
@@ -21,12 +19,10 @@ struct AppTheme: Identifiable, Equatable {
     let id: String
     let name: String
     
-    // Цвета
     let accentColorName: String
     let textColorName: String
     let secondTextColorName: String
     
-    // Фон
     let backColor1: String
     let backColor2: String
     let backColor3: String
@@ -35,7 +31,6 @@ struct AppTheme: Identifiable, Equatable {
     
     let gradient: LinearGradient
     
-    // Computed Properties
     var accentColor: Color { Color(accentColorName) }
     var textColor: Color { Color(textColorName) }
     var secondTextColor: Color { Color(secondTextColorName) }
@@ -45,23 +40,26 @@ struct AppTheme: Identifiable, Equatable {
     }
 }
 
-// --- МЕНЕДЖЕР ---
-
 @Observable
 class UserManager {
     static let shared = UserManager()
     let freeDailyLimit = 6
     
-    // ✅ Убрали profileImage и profileImageName
+    var isSleepModeEnabled: Bool {
+        didSet {
+            UserDefaults.standard.set(isSleepModeEnabled, forKey: "isSleepModeEnabled")
+        }
+    }
     
     private init() {
-        // ✅ Убрали загрузку фото при инициализации
+        self.isSleepModeEnabled = UserDefaults.standard.bool(forKey: "isSleepModeEnabled")
     }
     
     var isPremium: Bool {
         get { UserDefaults.standard.bool(forKey: "isPremium") }
         set { UserDefaults.standard.set(newValue, forKey: "isPremium") }
     }
+    
     
     var selectedSoundID: String {
         get { UserDefaults.standard.string(forKey: "selectedSoundID") ?? "rain" }
@@ -71,8 +69,7 @@ class UserManager {
     var selectedThemeID: String = UserDefaults.standard.string(forKey: "selectedThemeID") ?? "blue" {
         didSet { UserDefaults.standard.set(selectedThemeID, forKey: "selectedThemeID") }
     }
-
-    // Темы
+    
     let themes: [AppTheme] = [
         AppTheme(
             id: "blue",
@@ -164,74 +161,72 @@ class UserManager {
         AppSound(id: "white_noise", name: "White Noise", filename: "whitenoise")
     ]
     
-    // --- СПИСОК ВСЕХ МЕДАЛЕЙ ---
     let medals: [Medal] = [
-            Medal(id: "first_step", name: "First Step", description: "Complete your first 10 minutes", icon: "figure.step.training", requiredMinutes: 10),
-            Medal(id: "thinker", name: "Thinker", description: "Accumulate 60 minutes of focus", icon: "brain.head.profile", requiredMinutes: 60),
-            Medal(id: "zen_master", name: "Zen Master", description: "Reach 300 minutes total (5 hours)", icon: "mountain.2.fill", requiredMinutes: 300),
-            Medal(id: "week_streak", name: "Week Streak", description: "Pause for 7 days in a row", icon: "flame.fill", requiredMinutes: 0),
-            Medal(id: "early_bird", name: "Early Bird", description: "Complete a pause between 6 AM and 9 AM", icon: "sunrise.fill", requiredMinutes: 0),
-            Medal(id: "night_owl", name: "Night Owl", description: "Complete a pause after 10 PM", icon: "moon.stars.fill", requiredMinutes: 0),
-            Medal(id: "supporter", name: "Supporter", description: "Support Calm by going Plus", icon: "heart.fill", requiredMinutes: 0),
-            Medal(id: "marathoner", name: "Marathoner", description: "Complete a single 30-minute session", icon: "figure.run", requiredMinutes: 0),
-            Medal(id: "guru", name: "Guru", description: "Reach 1000 minutes of total peace", icon: "star.circle.fill", requiredMinutes: 1000),
-            Medal(id: "consistent", name: "Consistent", description: "Pause for 3 days in a row", icon: "checkmark.seal.fill", requiredMinutes: 0)
-        ]
+        Medal(id: "first_step", name: "First Step", description: "Complete your first 10 minutes", icon: "figure.step.training", requiredMinutes: 10),
+        Medal(id: "thinker", name: "Thinker", description: "Accumulate 60 minutes of focus", icon: "brain.head.profile", requiredMinutes: 60),
+        Medal(id: "zen_master", name: "Zen Master", description: "Reach 300 minutes total (5 hours)", icon: "mountain.2.fill", requiredMinutes: 300),
+        Medal(id: "week_streak", name: "Week Streak", description: "Pause for 7 days in a row", icon: "flame.fill", requiredMinutes: 0),
+        Medal(id: "early_bird", name: "Early Bird", description: "Complete a pause between 6 AM and 9 AM", icon: "sunrise.fill", requiredMinutes: 0),
+        Medal(id: "night_owl", name: "Night Owl", description: "Complete a pause after 10 PM", icon: "moon.stars.fill", requiredMinutes: 0),
+        Medal(id: "supporter", name: "Supporter", description: "Support Calm by going Plus", icon: "heart.fill", requiredMinutes: 0),
+        Medal(id: "marathoner", name: "Marathoner", description: "Complete a single 30-minute session", icon: "figure.run", requiredMinutes: 0),
+        Medal(id: "guru", name: "Guru", description: "Reach 1000 minutes of total peace", icon: "star.circle.fill", requiredMinutes: 1000),
+        Medal(id: "consistent", name: "Consistent", description: "Pause for 3 days in a row", icon: "checkmark.seal.fill", requiredMinutes: 0)
+    ]
     
-    // --- ПРОВЕРКА ОТКРЫТИЯ (ДЛЯ UI) ---
     func isMedalUnlocked(_ medal: Medal) -> Bool {
-            let totalMin = HistoryManager.shared.totalLifetimeMinutes
-            let streak = HistoryManager.shared.currentStreak
-            let sessions = HistoryManager.shared.history
+        let totalMin = HistoryManager.shared.totalLifetimeMinutes
+        let streak = HistoryManager.shared.currentStreak
+        let sessions = HistoryManager.shared.history
+        
+        switch medal.id {
+        case "first_step":
+            return totalMin >= 10
             
-            switch medal.id {
-            case "first_step":
-                return totalMin >= 10
-                
-            case "thinker":
-                return totalMin >= 60
-                
-            case "zen_master":
-                return totalMin >= 300
-                
-            case "guru":
-                return totalMin >= 1000
-                
-            case "week_streak":
-                return streak >= 7
-                
-            case "consistent":
-                return streak >= 3
-                
-            case "supporter":
-                return isPremium
-                
-            case "early_bird":
-                return sessions.contains { session in
-                    let hour = Calendar.current.component(.hour, from: session.date)
-                    return hour >= 6 && hour < 9
-                }
-                
-            case "night_owl":
-                return sessions.contains { session in
-                    let hour = Calendar.current.component(.hour, from: session.date)
-                    return hour >= 22 || hour < 4
-                }
-                
-            case "marathoner":
-                return sessions.contains { session in
-                    return session.durationMinutes >= 30
-                }
-                
-            default:
-                return totalMin >= medal.requiredMinutes && medal.requiredMinutes > 0
+        case "thinker":
+            return totalMin >= 60
+            
+        case "zen_master":
+            return totalMin >= 300
+            
+        case "guru":
+            return totalMin >= 1000
+            
+        case "week_streak":
+            return streak >= 7
+            
+        case "consistent":
+            return streak >= 3
+            
+        case "supporter":
+            return isPremium
+            
+        case "early_bird":
+            return sessions.contains { session in
+                let hour = Calendar.current.component(.hour, from: session.date)
+                return hour >= 6 && hour < 9
             }
+            
+        case "night_owl":
+            return sessions.contains { session in
+                let hour = Calendar.current.component(.hour, from: session.date)
+                return hour >= 22 || hour < 4
+            }
+            
+        case "marathoner":
+            return sessions.contains { session in
+                return session.durationMinutes >= 30
+            }
+            
+        default:
+            return totalMin >= medal.requiredMinutes && medal.requiredMinutes > 0
         }
+    }
     
     func getEarnedMedals() -> [Medal] {
         return medals.filter { isMedalUnlocked($0) }
     }
-
+    
     func getCurrentTheme() -> AppTheme {
         themes.first { $0.id == selectedThemeID } ?? themes[0]
     }
@@ -240,8 +235,6 @@ class UserManager {
         sounds.first { $0.id == selectedSoundID } ?? sounds[0]
     }
     
-    // ✅ ТЕПЕРЬ ВОЗВРАЩАЕТ ТОЛЬКО СТРОКУ (Название уровня)
-    // Иконка теперь будет статичной в View
     func getUserLevel() -> String {
         let totalMin = HistoryManager.shared.totalLifetimeMinutes
         if totalMin < 60 { return "Novice" }
@@ -249,9 +242,6 @@ class UserManager {
         else { return "Guru" }
     }
     
-    // ✅ Удалили loadProfileImage и saveProfileImage
-    
-    // СБРОС (Для тестов)
     func resetSubscription() { isPremium = false }
     func buyPremium() { isPremium = true }
 }

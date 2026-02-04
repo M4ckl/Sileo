@@ -2,13 +2,12 @@ import SwiftUI
 import StoreKit
 
 struct CalmPlusIcon: View {
-    var theme: AppTheme // Передаем тему для цвета градиента
+    var theme: AppTheme
     @State private var isBreathing = false
     @State private var isFloating = false
     
     var body: some View {
         ZStack {
-            // Фон: Градиент круга
             Circle()
                 .fill(
                     LinearGradient(
@@ -20,27 +19,23 @@ struct CalmPlusIcon: View {
                 .frame(width: 120, height: 120)
                 .shadow(color: theme.accentColor.opacity(0.5), radius: 20, x: 0, y: 10)
             
-            // Картинка: Белая, светится и тускнеет
-            Image("CalmPlusImage") // Твоя картинка
+            Image("CalmPlusImage")
                 .resizable()
-                .renderingMode(.original) // Оставляем оригинальный (белый) цвет
+                .renderingMode(.original)
                 .scaledToFit()
-                .frame(width: 128, height: 128) // Размер картинки внутри круга
-                .opacity(isBreathing ? 1.0 : 0.7) // Пульсация (тускнеет/светлеет)
+                .frame(width: 128, height: 128)
+                .opacity(isBreathing ? 1.0 : 0.7)
                 .shadow(color: .white.opacity(isBreathing ? 0.8 : 0.2), radius: isBreathing ? 15 : 5)
         }
-        // Эффект 2.5D (Парение и легкий наклон)
         .offset(y: isFloating ? -5 : 5)
         .rotation3DEffect(
             .degrees(isFloating ? 2 : -2),
-            axis: (x: 1, y: 0, z: 0) // Легкий наклон вперед-назад
+            axis: (x: 1, y: 0, z: 0)
         )
         .onAppear {
-            // Анимация 1: Яркость (1 секунда)
             withAnimation(.easeInOut(duration: 1.0).repeatForever(autoreverses: true)) {
                 isBreathing.toggle()
             }
-            // Анимация 2: Парение (чуть медленнее для естественности)
             withAnimation(.easeInOut(duration: 2.5).repeatForever(autoreverses: true)) {
                 isFloating.toggle()
             }
@@ -52,15 +47,12 @@ struct PaywallView: View {
     @Environment(\.dismiss) var dismiss
     @State private var storeManager = StoreManager.shared
     @Environment(\.colorScheme) var colorScheme
-    // ✅ 1. Environment и AppStorage для темы
     @Environment(UserManager.self) var userManager
     @AppStorage("isDarkMode") private var isDarkMode = false
     
-    // Анимация текста
     @State private var textOpacity: Double = 0
     @State private var textOffset: CGFloat = 20
     
-    // ✅ 2. Вычисляем тему
     var theme: AppTheme {
         userManager.getCurrentTheme()
     }
@@ -71,7 +63,6 @@ struct PaywallView: View {
                 .ignoresSafeArea()
             
             VStack(spacing: 0) {
-                // ВЕРХНЯЯ ПАНЕЛЬ
                 HStack {
                     Button(action: { dismiss() }) {
                         HStack(spacing: 6) {
@@ -85,92 +76,98 @@ struct PaywallView: View {
                         .glassEffect(.clear.interactive())
                     }
                     Spacer()
-                    Text("CALM PLUS") // Исправил "СALM" на английскую C
+                    Text("CALM PLUS")
                         .font(.system(size: 20, weight: .bold, design: .rounded))
                         .foregroundColor(theme.textColor)
                         .textCase(.uppercase)
                         .tracking(1)
                     Spacer()
-                    // Пустышка для баланса
                     Image(systemName: "chevron.left").opacity(0).padding()
                 }
                 .padding(.horizontal)
                 .padding(.top)
+                .zIndex(1)
                 
-                // ИКОНКА (Без изменений)
-                CalmPlusIcon(theme: theme)
-                    .padding(.vertical, 20)
-                
-                // ТЕКСТ И БЛОК ВОЗМОЖНОСТЕЙ
-                VStack(spacing: 16) { // Чуть увеличил общий spacing для воздуха
-                    
-                    Text("This is not just a subscription.")
-                        .font(.system(size: 20, weight: .bold, design: .serif))
-                        .foregroundStyle(theme.textColor)
-                        .multilineTextAlignment(.center)
-                        .minimumScaleFactor(0.8)
-                    
-                    Text("It’s a small contribution to your own calm.")
-                        .font(.system(size: 16, weight: .regular, design: .rounded))
-                        .foregroundStyle(theme.textColor.opacity(0.8))
-                        .multilineTextAlignment(.center)
-                        .minimumScaleFactor(0.9)
-                    
-                    Text("With Calm Plus, you unlock more themes, sounds,\nand unlimited pauses —")
-                        .font(.system(size: 14, weight: .regular, design: .rounded))
-                        .foregroundStyle(theme.textColor.opacity(0.6))
-                        .multilineTextAlignment(.center)
-                        .padding(.horizontal)
-                        .minimumScaleFactor(0.9)
-                    
-                    // ✅ НОВЫЙ БЛОК ВОЗМОЖНОСТЕЙ
-                    VStack(alignment: .leading, spacing: 14) {
-                        HStack(spacing: 12) {
-                            Image(systemName: "infinity")
-                                .foregroundColor(theme.accentColor)
-                                .frame(width: 24)
-                            Text("Unlimited pauses")
-                                .font(.system(size: 16, weight: .medium, design: .rounded))
-                                .foregroundColor(theme.textColor)
+                ScrollView(showsIndicators: false) {
+                    VStack(spacing: 0) {
+                        VStack(spacing: 20) {
+                            CalmPlusIcon(theme: theme)
+                                .padding(.top, 10)
+                            
+                            Text("It’s a small contribution to your own calm.")
+                                .font(.system(size: 22, weight: .bold, design: .rounded))
+                                .foregroundStyle(theme.textColor)
+                                .multilineTextAlignment(.center)
+                                .padding(.horizontal, 20)
+                            
+                            VStack(spacing: 10) {
+                                Text("No pressure. No goals.")
+                                    .font(.system(size: 16, weight: .medium, design: .rounded))
+                                    .foregroundStyle(theme.accentColor.opacity(0.6))
+                                
+                                Text("Just more space to breathe.")
+                                    .font(.system(size: 16, weight: .bold, design: .rounded))
+                                    .foregroundStyle(.white)
+                                    .padding(.vertical, 10)
+                                    .padding(.horizontal, 20)
+                                    .background(theme.accentColor.opacity(0.15))
+                                    .clipShape(Capsule())
+                            }
+                            .multilineTextAlignment(.center)
+                            .padding(.top, 5)
                         }
+                        .padding(.bottom, 30)
+                        .opacity(textOpacity)
+                        .offset(y: textOffset)
                         
-                        HStack(spacing: 12) {
-                            Image(systemName: "paintpalette.fill")
-                                .foregroundColor(theme.accentColor)
-                                .frame(width: 24)
-                            Text("4 additional themes")
-                                .font(.system(size: 16, weight: .medium, design: .rounded))
-                                .foregroundColor(theme.textColor)
+                        VStack(alignment: .leading, spacing: 10) {
+                            Text("WHAT'S INCLUDED")
+                                .font(.system(size: 12, weight: .bold, design: .rounded))
+                                .foregroundColor(theme.textColor.opacity(0.5))
+                                .padding(.leading, 10)
+                                .padding(.bottom, 5)
+                            
+                            VStack(alignment: .leading, spacing: 0) {
+                                FeatureRow(icon: "infinity", title: "Unlimited pauses", description: "Focus as much as you need without daily limits.", theme: theme)
+                                Divider().padding(.leading, 10).opacity(0.7)
+                                FeatureRow(icon: "paintpalette.fill", title: "4 additional themes", description: "Personalize your experience with exclusive colors.", theme: theme)
+                                Divider().padding(.leading, 10).opacity(0.7)
+                                FeatureRow(icon: "speaker.wave.2.fill", title: "4 additional sounds", description: "Unlock premium ambient sounds for deep focus.", theme: theme)
+                                Divider().padding(.leading, 10).opacity(0.7)
+                            }
+                            .padding(.vertical, 20)
+                            .padding(.horizontal, 20)
+                            .background(Color.white.opacity(colorScheme == .dark ? 0.1 : 0.8))
+                            .cornerRadius(24)
+                            .shadow(color: Color.black.opacity(0.05), radius: 10, x: 0, y: 5)
                         }
+                        .padding(.horizontal, 20)
+                        .opacity(textOpacity)
+                        .offset(y: textOffset)
                         
-                        HStack(spacing: 12) {
-                            Image(systemName: "speaker.wave.2.fill")
-                                .foregroundColor(theme.accentColor)
-                                .frame(width: 24)
-                            Text("4 additional sounds")
-                                .font(.system(size: 16, weight: .medium, design: .rounded))
-                                .foregroundColor(theme.textColor)
-                        }
+                        Spacer(minLength: 200)
                     }
-                    .padding(24) // Внутренний отступ
-                    .background(Color.white.opacity(colorScheme == .dark ? 0.1 : 1)) // Полупрозрачный фон
-                    .cornerRadius(30) // Радиус 30
-                    .padding(.horizontal, 10) // Отступ от краев экрана
-                    
-                    Text("No pressure. No goals.\nJust more space to breathe.")
-                        .font(.system(size: 18, weight: .bold, design: .rounded))
-                        .foregroundStyle(theme.accentColor)
-                        .multilineTextAlignment(.center)
-                        .padding(.top, 4)
-                        .minimumScaleFactor(0.8)
                 }
-                .padding(.horizontal, 20)
-                .opacity(textOpacity)
-                .offset(y: textOffset)
-                
+            }
+            
+            VStack {
+                Spacer()
+                LinearGradient(
+                    colors: [
+                        theme.accentColor.opacity(0.5),
+                        theme.accentColor.opacity(0.0)
+                    ],
+                    startPoint: .bottom,
+                    endPoint: .top
+                )
+                .frame(height: 250)
+            }
+            .ignoresSafeArea()
+            .opacity(textOpacity)
+            
+            VStack {
                 Spacer()
                 
-                // КНОПКА ПОКУПКИ
                 VStack(spacing: 12) {
                     if let product = storeManager.products.first {
                         Button(action: {
@@ -179,37 +176,32 @@ struct PaywallView: View {
                                 if UserManager.shared.isPremium { dismiss() }
                             }
                         }) {
-                            Text("Purchase for \(product.displayPrice)")
+                            Text("Purchase for \(product.displayPrice) / month")
                                 .font(.system(size: 18, weight: .bold, design: .rounded))
                                 .foregroundColor(.white)
                                 .frame(maxWidth: .infinity)
                                 .padding(.vertical, 16)
                                 .background(theme.accentColor)
                                 .cornerRadius(30)
-                                .shadow(color: theme.accentColor.opacity(0.4), radius: 10, y: 5)
+                                .shadow(color: Color.black.opacity(0.1), radius: 12, x: 0, y: 6)
                         }
-                        .padding(.horizontal, 30)
                     } else {
-                        ProgressView()
-                            .tint(theme.textColor)
-                            .padding()
+                        ProgressView().tint(theme.textColor).padding()
                     }
-                    
-                    Text("You can cancel anytime. No pressure.")
-                        .font(.system(size: 12, weight: .medium, design: .rounded))
-                        .foregroundStyle(theme.textColor.opacity(0.5))
                     
                     Button("Restore Purchases") {
                         Task { await storeManager.restorePurchases() }
                     }
-                    .font(.caption)
-                    .foregroundColor(theme.textColor.opacity(0.3))
+                    .font(.system(size: 13, weight: .medium, design: .rounded))
+                    .foregroundColor(.white.opacity(0.9))
                 }
-                .padding(.bottom, 20)
+                .padding(.horizontal, 20)
+                .padding(.bottom, 10)
             }
+            .opacity(textOpacity)
+            .offset(y: textOffset)
         }
         .navigationBarHidden(true)
-        // ✅ 3. Принудительно ставим цветовую схему
         .preferredColorScheme(isDarkMode ? .dark : .light)
         .task {
             await storeManager.loadProducts()
@@ -220,5 +212,35 @@ struct PaywallView: View {
                 textOffset = 0
             }
         }
+    }
+}
+
+struct FeatureRow: View {
+    let icon: String
+    let title: String
+    let description: String
+    let theme: AppTheme
+    
+    var body: some View {
+        HStack(alignment: .top, spacing: 16) {
+            Image(systemName: icon)
+                .font(.system(size: 22))
+                .foregroundColor(theme.accentColor)
+                .frame(width: 24)
+                .padding(.top, 2)
+            
+            VStack(alignment: .leading, spacing: 4) {
+                Text(title)
+                    .font(.system(size: 17, weight: .semibold, design: .rounded))
+                    .foregroundColor(theme.textColor)
+                
+                Text(description)
+                    .font(.system(size: 14, weight: .regular, design: .rounded))
+                    .foregroundColor(theme.textColor.opacity(0.6))
+                    .fixedSize(horizontal: false, vertical: true)
+                    .lineSpacing(2)
+            }
+        }
+        .padding(.vertical, 12)
     }
 }
