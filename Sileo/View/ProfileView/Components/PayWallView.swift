@@ -133,7 +133,6 @@ struct PaywallView: View {
                                 FeatureRow(icon: "paintpalette.fill", title: "4 additional themes", description: "Personalize your experience with exclusive colors.", theme: theme)
                                 Divider().padding(.leading, 10).opacity(0.7)
                                 FeatureRow(icon: "speaker.wave.2.fill", title: "4 additional sounds", description: "Unlock premium ambient sounds for deep focus.", theme: theme)
-                                Divider().padding(.leading, 10).opacity(0.7)
                             }
                             .padding(.vertical, 20)
                             .padding(.horizontal, 20)

@@ -1,7 +1,7 @@
 {
   "images" : [
     {
-      "filename" : "Component 14.png",
+      "filename" : "icon sileo.png",
       "idiom" : "universal",
       "platform" : "ios",
       "size" : "1024x1024"
@@ -13,7 +13,7 @@
           "value" : "dark"
         }
       ],
-      "filename" : "Component 15.png",
+      "filename" : "icon sileo dark.png",
       "idiom" : "universal",
       "platform" : "ios",
       "size" : "1024x1024"

@@ -88,8 +88,6 @@ struct ManageSubscriptionView: View {
                                 ActiveFeatureRow(icon: "paintpalette.fill", title: "All themes unlocked", theme: theme)
                                 Divider().padding(.leading, 50).opacity(0.5)
                                 ActiveFeatureRow(icon: "speaker.wave.2.fill", title: "All sounds unlocked", theme: theme)
-                                Divider().padding(.leading, 50).opacity(0.5)
-                                ActiveFeatureRow(icon: "moon.stars.fill", title: "Sleep mode access", theme: theme)
                             }
                             .padding(.vertical, 20)
                             .padding(.horizontal, 20)

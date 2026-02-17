@@ -158,7 +158,7 @@ class UserManager {
         AppSound(id: "forest", name: "Forest", filename: "forest"),
         AppSound(id: "night", name: "Night", filename: "night"),
         AppSound(id: "waves", name: "Ocean", filename: "waves"),
-        AppSound(id: "white_noise", name: "White Noise", filename: "whitenoise")
+        AppSound(id: "meditation", name: "Meditation", filename: "meditation")
     ]
     
     let medals: [Medal] = [
