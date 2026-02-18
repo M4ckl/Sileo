@@ -36,7 +36,7 @@ struct AchievementsGridView: View {
                                         selectedMedal = medal
                                     }
                                 }) {
-                                    AchievementCard(medal: medal, isUnlocked: isUnlocked, theme: theme)
+                                    AchievementCard(medal: medal, isUnlocked: isUnlocked, theme: theme, forcedScheme: currentScheme)
                                         .matchedGeometryEffect(id: medal.id, in: animationNamespace)
                                 }
                             } else {
@@ -120,7 +120,7 @@ struct AchievementsGridView: View {
                         .blur(radius: 60)
                         .opacity(isUnlocked ? 0.6 : 0)
                     
-                    AchievementCard(medal: medal, isUnlocked: isUnlocked, theme: theme, isDetail: true)
+                    AchievementCard(medal: medal, isUnlocked: isUnlocked, theme: theme, isDetail: true, forcedScheme: currentScheme)
                         .matchedGeometryEffect(id: medal.id, in: animationNamespace)
                         .scaleEffect(1.2)
                         .rotation3DEffect(
@@ -135,7 +135,7 @@ struct AchievementsGridView: View {
                 VStack(spacing: 16) {
                     Text(medal.name)
                         .font(.system(size: 32, weight: .bold, design: .rounded))
-                        .foregroundColor(.white)
+                        .foregroundColor(currentScheme == .dark ? .white : Color(theme.textColor))
                     
                     if !isUnlocked {
                         Text("LOCKED")
@@ -156,7 +156,7 @@ struct AchievementsGridView: View {
                     
                     Text(medal.description)
                         .font(.system(size: 18, weight: .medium, design: .rounded))
-                        .foregroundColor(.white)
+                        .foregroundColor(currentScheme == .dark ? .white : Color(theme.textColor))
                         .multilineTextAlignment(.center)
                         .padding(.horizontal, 40)
                         .padding(.bottom, 20)
@@ -180,6 +180,7 @@ struct AchievementCard: View {
     let isUnlocked: Bool
     let theme: AppTheme
     var isDetail: Bool = false
+    var forcedScheme: ColorScheme
     
     @Environment(\.colorScheme) var colorScheme
     
@@ -258,7 +259,7 @@ struct AchievementCard: View {
             if !isDetail {
                 Text(medal.name)
                     .font(.system(size: 16, weight: .bold, design: .rounded))
-                    .foregroundColor(isUnlocked ? theme.textColor : colorScheme == .dark ? .white.opacity(0.6) : .gray)
+                    .foregroundColor(isUnlocked ? theme.textColor : (forcedScheme == .dark ? .white.opacity(0.6) : .gray))
                     .multilineTextAlignment(.center)
                     .lineLimit(2)
             }
@@ -269,7 +270,7 @@ struct AchievementCard: View {
         .background(
             isDetail ? nil :
                 RoundedRectangle(cornerRadius: 24)
-                .fill(Color.white.opacity(colorScheme == .dark ? 0.1 : 1))
+                .fill(Color.white.opacity(forcedScheme == .dark ? 0.1 : 1))
                 .shadow(color: Color.black.opacity(0.05), radius: 5, x: 0, y: 2)
         )
     }

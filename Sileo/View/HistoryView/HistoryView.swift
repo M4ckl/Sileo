@@ -60,7 +60,7 @@ struct HistoryView: View {
                                             
                                             Text(monthDate.monthYearString().capitalized)
                                                 .font(.system(size: 16, weight: isSelected ? .bold : .medium, design: .rounded))
-                                                .foregroundColor(isSelected ? theme.secondTextColor : .white.opacity(0.5))
+                                                .foregroundColor(isSelected ? .white : .white.opacity(0.5))
                                                 .scaleEffect(isSelected ? 1.0 : 0.95)
                                                 .padding(.vertical, 12)
                                                 .padding(.horizontal, 20)

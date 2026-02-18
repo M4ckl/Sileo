@@ -20,7 +20,7 @@ struct AudioVisualizerView: View {
         }
         .frame(width: 44, height: 44)
         .clipShape(Circle())
-        .glassEffect(.clear.interactive())
+        .glassEffect(.clear)
         .onAppear {
             isAnimating = true
         }

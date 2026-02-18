@@ -121,7 +121,7 @@ struct ManageSubscriptionView: View {
                     }) {
                         Text("Manage in Apple Settings")
                             .font(.system(size: 16, weight: .bold, design: .rounded))
-                            .foregroundColor(theme.secondTextColor)
+                            .foregroundColor(.white)
                             .frame(maxWidth: .infinity)
                             .padding(.vertical, 18)
                             .background(theme.accentColor)

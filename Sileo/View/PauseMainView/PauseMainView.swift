@@ -241,7 +241,7 @@ struct StandardInterfaceView: View {
                         .font(.system(size: 18, weight: .medium, design: .rounded))
                         .padding(.vertical, 12).padding(.horizontal, 36)
                         .tracking(2).foregroundColor(theme.textColor)
-                        .glassEffect(.clear.interactive())
+                        .glassEffect(.clear)
                 }
                 .transition(.move(edge: .bottom).combined(with: .opacity))
             } else {
@@ -259,7 +259,7 @@ struct StandardInterfaceView: View {
                     }
                     .font(.system(size: 16, weight: .medium, design: .rounded))
                     .padding(.vertical, 14).padding(.horizontal, 16)
-                    .cornerRadius(20).glassEffect(.clear.interactive())
+                    .cornerRadius(20).glassEffect(.clear)
                     
                     Button(action: { showProfile = true }) {
                         HStack(spacing: 6) { Image(systemName: "person.circle").font(.system(size: 24)) }
