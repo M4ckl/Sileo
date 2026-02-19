@@ -7,7 +7,7 @@ class StoreManager {
     static let shared = StoreManager()
     var products: [Product] = []
     
-    private let productIds = ["com.yourapp.calmplus.monthly"]
+    private let productIds = ["com.sileo.calmplus.monthly"]
     
     init() {
         Task {
