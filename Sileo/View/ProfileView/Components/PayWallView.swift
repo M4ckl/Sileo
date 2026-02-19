@@ -1,47 +1,36 @@
 import SwiftUI
 import StoreKit
 
-struct CalmPlusIcon: View {
-    var theme: AppTheme
-    @State private var isBreathing = false
-    @State private var isFloating = false
+struct FeatureRow: View {
+    let icon: String
+    let title: String
+    let description: String
+    let theme: AppTheme
     
     var body: some View {
-        ZStack {
-            Circle()
-                .fill(
-                    LinearGradient(
-                        colors: [theme.accentColor, theme.accentColor.opacity(0.6), .orange],
-                        startPoint: .topLeading,
-                        endPoint: .bottomTrailing
-                    )
-                )
-                .frame(width: 120, height: 120)
-                .shadow(color: theme.accentColor.opacity(0.5), radius: 20, x: 0, y: 10)
+        HStack(alignment: .top, spacing: 16) {
+            Image(systemName: icon)
+                .font(.system(size: 22))
+                .foregroundColor(theme.accentColor)
+                .frame(width: 24)
+                .padding(.top, 2)
             
-            Image("CalmPlusImage")
-                .resizable()
-                .renderingMode(.original)
-                .scaledToFit()
-                .frame(width: 128, height: 128)
-                .opacity(isBreathing ? 1.0 : 0.7)
-                .shadow(color: .white.opacity(isBreathing ? 0.8 : 0.2), radius: isBreathing ? 15 : 5)
-        }
-        .offset(y: isFloating ? -5 : 5)
-        .rotation3DEffect(
-            .degrees(isFloating ? 2 : -2),
-            axis: (x: 1, y: 0, z: 0)
-        )
-        .onAppear {
-            withAnimation(.easeInOut(duration: 1.0).repeatForever(autoreverses: true)) {
-                isBreathing.toggle()
-            }
-            withAnimation(.easeInOut(duration: 2.5).repeatForever(autoreverses: true)) {
-                isFloating.toggle()
+            VStack(alignment: .leading, spacing: 4) {
+                Text(title)
+                    .font(.system(size: 17, weight: .semibold, design: .rounded))
+                    .foregroundColor(theme.textColor)
+                
+                Text(description)
+                    .font(.system(size: 14, weight: .regular, design: .rounded))
+                    .foregroundColor(theme.textColor.opacity(0.6))
+                    .fixedSize(horizontal: false, vertical: true)
+                    .lineSpacing(2)
             }
         }
+        .padding(.vertical, 12)
     }
 }
+
 
 struct PaywallView: View {
     @Environment(\.dismiss) var dismiss
@@ -91,7 +80,9 @@ struct PaywallView: View {
                 ScrollView(showsIndicators: false) {
                     VStack(spacing: 0) {
                         VStack(spacing: 20) {
-                            CalmPlusIcon(theme: theme)
+                            SpinningModelView(modelName: "lotus.usdz", accentColor: Color(theme.accentColor))
+                                .frame(width: 120, height: 120) // Задаем размер рамки
+                                .shadow(color: theme.accentColor.opacity(0.3), radius: 8, x: 0, y: 8) // Оставляем красивую тень
                                 .padding(.top, 10)
                             
                             Text("It’s a small contribution to your own calm.")
@@ -211,35 +202,5 @@ struct PaywallView: View {
                 textOffset = 0
             }
         }
-    }
-}
-
-struct FeatureRow: View {
-    let icon: String
-    let title: String
-    let description: String
-    let theme: AppTheme
-    
-    var body: some View {
-        HStack(alignment: .top, spacing: 16) {
-            Image(systemName: icon)
-                .font(.system(size: 22))
-                .foregroundColor(theme.accentColor)
-                .frame(width: 24)
-                .padding(.top, 2)
-            
-            VStack(alignment: .leading, spacing: 4) {
-                Text(title)
-                    .font(.system(size: 17, weight: .semibold, design: .rounded))
-                    .foregroundColor(theme.textColor)
-                
-                Text(description)
-                    .font(.system(size: 14, weight: .regular, design: .rounded))
-                    .foregroundColor(theme.textColor.opacity(0.6))
-                    .fixedSize(horizontal: false, vertical: true)
-                    .lineSpacing(2)
-            }
-        }
-        .padding(.vertical, 12)
     }
 }

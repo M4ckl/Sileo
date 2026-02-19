@@ -19,7 +19,7 @@ class StoreManager {
             self.products = try await Product.products(for: productIds)
             self.products.sort { $0.price < $1.price }
         } catch {
-            print("Ошибка загрузки товаров: \(error)")
+            print("Error loading products: \(error)")
         }
     }
     
@@ -32,16 +32,16 @@ class StoreManager {
                 await handleTransaction(verification)
                 
             case .pending:
-                print("Транзакция ожидает подтверждения (например, родительский контроль)")
+                print("Transaction is pending approval (e.g., parental control)")
                 
             case .userCancelled:
-                print("Пользователь отменил покупку")
+                print("The user canceled the purchase")
                 
             default:
                 break
             }
         } catch {
-            print("Ошибка покупки: \(error)")
+            print("Purchase error: \(error)")
         }
     }
     
@@ -65,7 +65,7 @@ class StoreManager {
             await transaction.finish()
             
         case .unverified:
-            print("Транзакция не прошла проверку подлинности")
+            print("Transaction failed authentication")
         }
     }
     
