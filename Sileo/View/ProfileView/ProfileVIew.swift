@@ -67,8 +67,11 @@ struct InternalProfileContent: View {
                                         .fill(theme.accentColor.opacity(0.1))
                                         .frame(width: 80, height: 80)
                                     
-                                    Image(systemName: "person.circle.fill")
-                                        .font(.system(size: 40))
+                                    Image(userManager.isPremium ? "calmplus" : "calm")
+                                        .resizable()
+                                        .renderingMode(.template)
+                                        .aspectRatio(contentMode: .fit)
+                                        .frame(width: 48, height: 48)
                                         .foregroundColor(theme.accentColor)
                                 }
                                 

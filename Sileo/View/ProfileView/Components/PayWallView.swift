@@ -51,6 +51,16 @@ struct PaywallView: View {
             BackgroundOnlyColorsView()
                 .ignoresSafeArea()
             
+            ParticleBackgroundView(color: .white)
+                .ignoresSafeArea()
+                .mask(
+                    LinearGradient(
+                        gradient: Gradient(colors: [.black, .black, .clear]),
+                        startPoint: .top,
+                        endPoint: .center
+                    )
+                )
+            
             VStack(spacing: 0) {
                 HStack {
                     Button(action: { dismiss() }) {
@@ -80,10 +90,21 @@ struct PaywallView: View {
                 ScrollView(showsIndicators: false) {
                     VStack(spacing: 0) {
                         VStack(spacing: 20) {
-                            SpinningModelView(modelName: "lotus.usdz", accentColor: Color(theme.accentColor))
-                                .frame(width: 120, height: 120) // Задаем размер рамки
-                                .shadow(color: theme.accentColor.opacity(0.3), radius: 8, x: 0, y: 8) // Оставляем красивую тень
-                                .padding(.top, 10)
+                            GeometryReader { proxy in
+                                let minY = proxy.frame(in: .named("scroll")).minY
+                                let opacity = max(0, min(1, (minY + 20) / 70))
+                                
+                                VStack {
+                                    SpinningModelView(modelName: "lotus.usdz", accentColor: Color(theme.accentColor))
+                                        .frame(width: 120, height: 120)
+                                        .shadow(color: theme.accentColor.opacity(0.3 * opacity), radius: 8, x: 0, y: 8)
+                                        .opacity(opacity)
+                                        .scaleEffect(opacity)
+                                }
+                                .frame(maxWidth: .infinity)
+                            }
+                            .frame(height: 130)
+                            .padding(.top, 10)
                             
                             Text("It’s a small contribution to your own calm.")
                                 .font(.system(size: 22, weight: .bold, design: .rounded))
@@ -138,7 +159,9 @@ struct PaywallView: View {
                         Spacer(minLength: 200)
                     }
                 }
+                
             }
+            .coordinateSpace(name: "scroll")
             
             VStack {
                 Spacer()

@@ -12,23 +12,38 @@ struct ParticleBackgroundView: View {
         var opacity: Double
         var speed: CGFloat
         var sway: CGFloat
+        var seed: Double // Для индивидуального покачивания
     }
     
     var body: some View {
         GeometryReader { geo in
-            ZStack {
-                ForEach(particles) { particle in
-                    Circle()
-                        .fill(color)
-                        .frame(width: particle.size, height: particle.size)
-                        .opacity(particle.opacity * max(0, (1.0 - Double(particle.y / (geo.size.height * 0.5)))))
-                        .position(x: particle.x + sin(particle.y / 30) * particle.sway, y: particle.y)
+            // TimelineView обновляется каждый кадр (60 раз в секунду)
+            TimelineView(.animation) { timeline in
+                Canvas { context, size in
+                    // Рисуем через Canvas для максимальной производительности
+                    for particle in particles {
+                        let rect = CGRect(
+                            x: particle.x + sin(particle.y / 30 + particle.seed) * particle.sway,
+                            y: particle.y,
+                            width: particle.size,
+                            height: particle.size
+                        )
+                        
+                        // Вычисляем прозрачность в зависимости от высоты
+                        let fadeOut = max(0, 1.0 - Double(particle.y / (size.height * 0.5)))
+                        let finalOpacity = particle.opacity * fadeOut
+                        
+                        context.opacity = finalOpacity
+                        context.fill(Path(ellipseIn: rect), with: .color(color))
+                    }
+                }
+                .onChange(of: timeline.date) {
+                    updateParticles(in: geo.size)
                 }
             }
             .onAppear {
                 if particles.isEmpty {
                     createInitialParticles(in: geo.size)
-                    startAnimation(in: geo.size)
                 }
             }
         }
@@ -36,7 +51,8 @@ struct ParticleBackgroundView: View {
     }
     
     private func createInitialParticles(in size: CGSize) {
-        for _ in 100...160 {
+        // Оптимальное количество для Canvas — 80-100 штук
+        for _ in 0...90 {
             particles.append(newParticle(in: size, isInitial: true))
         }
     }
@@ -44,23 +60,24 @@ struct ParticleBackgroundView: View {
     private func newParticle(in size: CGSize, isInitial: Bool = false) -> Particle {
         Particle(
             x: CGFloat.random(in: 0...size.width),
-            y: isInitial ? CGFloat.random(in: 0...size.height * 0.7) : -20,
-            size: CGFloat.random(in: 3...7),
+            y: isInitial ? CGFloat.random(in: 0...size.height * 0.8) : -20,
+            size: CGFloat.random(in: 3...6),
             opacity: Double.random(in: 0.3...0.6),
-            speed: CGFloat.random(in: 0.5...1.8),
-            sway: CGFloat.random(in: 15...40)
+            speed: CGFloat.random(in: 0.7...1.5),
+            sway: CGFloat.random(in: 10...30),
+            seed: Double.random(in: 0...100)
         )
     }
     
-    private func startAnimation(in size: CGSize) {
-        Timer.scheduledTimer(withTimeInterval: 0.016, repeats: true) { _ in
-            for i in 0..<particles.count {
-                particles[i].y += particles[i].speed
-
-                if particles[i].y > size.height * 0.6 {
-                    particles[i] = newParticle(in: size, isInitial: false)
-                }
+    private func updateParticles(in size: CGSize) {
+        for i in 0..<particles.count {
+            particles[i].y += particles[i].speed
+            
+            // Если улетела слишком низко — возвращаем наверх
+            if particles[i].y > size.height * 0.6 {
+                particles[i] = newParticle(in: size, isInitial: false)
             }
         }
     }
 }
+
