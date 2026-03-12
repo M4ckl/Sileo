@@ -1,7 +1,7 @@
 {
   "images" : [
     {
-      "filename" : "pattern.svg",
+      "filename" : "beach sea.svg",
       "idiom" : "universal",
       "scale" : "1x"
     },
@@ -12,7 +12,7 @@
           "value" : "dark"
         }
       ],
-      "filename" : "Theme=Magic.svg",
+      "filename" : "beach sea dark.svg",
       "idiom" : "universal",
       "scale" : "1x"
     },

@@ -138,7 +138,7 @@ class UserManager {
         ),
         AppTheme(
             id: "deepblue",
-            name: "Deep Sea",
+            name: "Beach Sea",
             accentColorName: "DeepAccentColor",
             textColorName: "DeepTextColor",
             secondTextColorName: "DeepSecondColor",

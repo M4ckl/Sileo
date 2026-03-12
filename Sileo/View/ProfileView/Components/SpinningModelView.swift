@@ -72,8 +72,7 @@ struct SpinningModelView: UIViewRepresentable {
         
         scene.lightingEnvironment.contents = UIColor(white: 0.85, alpha: 1.0)
         scene.lightingEnvironment.intensity = 1.2
-        
-        // MARK: - Камера
+
         let camera = SCNCamera()
         camera.fieldOfView = 38
         camera.wantsHDR = true

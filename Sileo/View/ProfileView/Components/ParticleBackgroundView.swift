@@ -12,15 +12,13 @@ struct ParticleBackgroundView: View {
         var opacity: Double
         var speed: CGFloat
         var sway: CGFloat
-        var seed: Double // Для индивидуального покачивания
+        var seed: Double
     }
     
     var body: some View {
         GeometryReader { geo in
-            // TimelineView обновляется каждый кадр (60 раз в секунду)
             TimelineView(.animation) { timeline in
                 Canvas { context, size in
-                    // Рисуем через Canvas для максимальной производительности
                     for particle in particles {
                         let rect = CGRect(
                             x: particle.x + sin(particle.y / 30 + particle.seed) * particle.sway,
@@ -28,8 +26,7 @@ struct ParticleBackgroundView: View {
                             width: particle.size,
                             height: particle.size
                         )
-                        
-                        // Вычисляем прозрачность в зависимости от высоты
+
                         let fadeOut = max(0, 1.0 - Double(particle.y / (size.height * 0.5)))
                         let finalOpacity = particle.opacity * fadeOut
                         
@@ -51,7 +48,6 @@ struct ParticleBackgroundView: View {
     }
     
     private func createInitialParticles(in size: CGSize) {
-        // Оптимальное количество для Canvas — 80-100 штук
         for _ in 0...90 {
             particles.append(newParticle(in: size, isInitial: true))
         }
@@ -72,8 +68,6 @@ struct ParticleBackgroundView: View {
     private func updateParticles(in size: CGSize) {
         for i in 0..<particles.count {
             particles[i].y += particles[i].speed
-            
-            // Если улетела слишком низко — возвращаем наверх
             if particles[i].y > size.height * 0.6 {
                 particles[i] = newParticle(in: size, isInitial: false)
             }
