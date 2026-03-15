@@ -75,7 +75,7 @@
          </BuildableReference>
       </BuildableProductRunnable>
       <StoreKitConfigurationFileReference
-         identifier = "../../Sileo/Services/Products.storekit">
+         identifier = "../../Sileo/Resources/Subscriptions.storekit">
       </StoreKitConfigurationFileReference>
    </LaunchAction>
    <ProfileAction

@@ -6,10 +6,6 @@
 	objectVersion = 77;
 	objects = {
 
-/* Begin PBXBuildFile section */
-		C645037E2F193D5300688762 /* Launch Screen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = C645037D2F193D5300688762 /* Launch Screen.storyboard */; };
-/* End PBXBuildFile section */
-
 /* Begin PBXContainerItemProxy section */
 		C67742772F0EB9CB00519F64 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -41,15 +37,27 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		C645037D2F193D5300688762 /* Launch Screen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = "Launch Screen.storyboard"; sourceTree = "<group>"; };
 		C67742692F0EB9CA00519F64 /* Sileo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Sileo.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		C67742762F0EB9CB00519F64 /* SileoTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SileoTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		C67742802F0EB9CB00519F64 /* SileoUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SileoUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		C60F91512F6591A9009B41D5 /* Exceptions for "Sileo" folder in "Sileo" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = C67742682F0EB9CA00519F64 /* Sileo */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		C677426B2F0EB9CA00519F64 /* Sileo */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				C60F91512F6591A9009B41D5 /* Exceptions for "Sileo" folder in "Sileo" target */,
+			);
 			path = Sileo;
 			sourceTree = "<group>";
 		};
@@ -93,7 +101,6 @@
 		C67742602F0EB9CA00519F64 = {
 			isa = PBXGroup;
 			children = (
-				C645037D2F193D5300688762 /* Launch Screen.storyboard */,
 				C677426B2F0EB9CA00519F64 /* Sileo */,
 				C67742792F0EB9CB00519F64 /* SileoTests */,
 				C67742832F0EB9CB00519F64 /* SileoUITests */,
@@ -234,7 +241,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				C645037E2F193D5300688762 /* Launch Screen.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -426,6 +432,7 @@
 				DEVELOPMENT_TEAM = 56A37FLPHJ;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Sileo/Info.plist;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -460,6 +467,7 @@
 				DEVELOPMENT_TEAM = 56A37FLPHJ;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Sileo/Info.plist;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
