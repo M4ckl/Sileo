@@ -42,7 +42,7 @@ struct SoundListView: View {
     
     var body: some View {
         ForEach(Array(UserManager.shared.sounds.enumerated()), id: \.element.id) { index, sound in
-            let isLocked = !UserManager.shared.isPremium && index >= 2
+            let isLocked = !UserManager.shared.isPremium && index >= 3
             let isSelected = UserManager.shared.selectedSoundID == sound.id
             let isPlaying = previewManager.playingSoundID == sound.id
             
