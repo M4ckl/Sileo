@@ -120,4 +120,11 @@ class HistoryManager {
         }
         self.currentStreak = streak
     }
+    
+    #if DEBUG
+    func setHistoryForTesting(_ sessions: [PauseSession]) {
+        history = sessions
+        totalLifetimeMinutes = sessions.reduce(0) { $0 + $1.durationMinutes }
+    }
+    #endif
 }
