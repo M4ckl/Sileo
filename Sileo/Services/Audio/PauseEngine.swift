@@ -34,13 +34,8 @@ class PauseEngine {
         HistoryManager.shared.getData(for: HistoryManager.shared.currentDate).totalMinutes
     }
     
+    @discardableResult
     func startPause() -> Bool {
-        if !userManager.isPremium {
-            if todayUsageCount >= userManager.freeDailyLimit {
-                return false
-            }
-        }
-        
         if state == .idle {
             remainingSeconds = selectedMinutes * 60
         }

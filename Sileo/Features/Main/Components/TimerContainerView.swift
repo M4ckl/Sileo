@@ -6,18 +6,12 @@ struct TimerContainerView: View {
     
     @State private var isTouchingBezel = false
     @State private var isFocusMode = false
-    @State private var showLimitWarning = false
-    
-    @Environment(UserManager.self) var userManager
+
     @Environment(\.colorScheme) var colorScheme
-    
+
     let bezelDiameter: CGFloat = 300
     let circleDiameter: CGFloat = 240
-    
-    var isLimitReached: Bool {
-        return !userManager.isPremium && engine.todayUsageCount >= userManager.freeDailyLimit
-    }
-    
+
     var body: some View {
         ZStack {
             BezelView(
@@ -36,21 +30,6 @@ struct TimerContainerView: View {
                 .frame(width: circleDiameter, height: circleDiameter)
                 .scaleEffect(isTouchingBezel || isFocusMode ? 1.05 : 1.0)
                 .offset(y: isFocusMode ? -20 : 0)
-            
-            if showLimitWarning {
-                VStack {
-                    Spacer()
-                    Text("Daily limit reached")
-                        .font(.system(size: 14, weight: .medium, design: .rounded))
-                        .foregroundColor(.white)
-                        .padding(.vertical, 8).padding(.horizontal, 16)
-                        .background(Color.black.opacity(0.6))
-                        .cornerRadius(20)
-                }
-                .padding(.bottom, -60)
-                .transition(.opacity)
-                .zIndex(10)
-            }
         }
         .animation(.spring(response: 0.6, dampingFraction: 0.7), value: isFocusMode)
         .animation(.spring(response: 0.4, dampingFraction: 0.6), value: isTouchingBezel)
@@ -138,17 +117,7 @@ struct TimerContainerView: View {
     func handleCircleTap() {
         if engine.state == .idle {
             if engine.selectedMinutes > 0 {
-                if isLimitReached {
-                    withAnimation(.spring()) { showLimitWarning = true }
-                    Task {
-                        try? await Task.sleep(nanoseconds: 3_000_000_000)
-                        await MainActor.run {
-                            withAnimation { showLimitWarning = false }
-                        }
-                    }
-                    return
-                }
-                if !engine.startPause() { UINotificationFeedbackGenerator().notificationOccurred(.error) }
+                engine.startPause()
             } else { UINotificationFeedbackGenerator().notificationOccurred(.error) }
         } else if engine.state == .running { engine.togglePause() }
         else if engine.state == .paused { engine.togglePause() }

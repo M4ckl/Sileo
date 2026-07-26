@@ -18,14 +18,18 @@ extension Date {
         }
         return dates
     }
-    
+
     func isSameMonth(as date: Date) -> Bool {
         Calendar.current.isDate(self, equalTo: date, toGranularity: .month)
     }
-    
-    func monthYearString() -> String {
+
+    private static let monthYearFormatter: DateFormatter = {
         let formatter = DateFormatter()
         formatter.dateFormat = "MMMM yyyy"
-        return formatter.string(from: self)
+        return formatter
+    }()
+
+    func monthYearString() -> String {
+        Self.monthYearFormatter.string(from: self)
     }
 }

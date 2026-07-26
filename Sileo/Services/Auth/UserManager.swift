@@ -4,17 +4,11 @@ import Observation
 @Observable
 class UserManager {
     static let shared = UserManager()
-    
-    let freeDailyLimit = 6
 
     var isSleepModeEnabled: Bool {
         didSet { UserDefaults.standard.set(isSleepModeEnabled, forKey: "isSleepModeEnabled") }
     }
-    
-    var isPremium: Bool {
-        didSet { UserDefaults.standard.set(isPremium, forKey: "isPremium") }
-    }
-    
+
     var selectedSoundID: String {
         didSet { UserDefaults.standard.set(selectedSoundID, forKey: "selectedSoundID") }
     }
@@ -25,7 +19,6 @@ class UserManager {
 
     private init() {
         self.isSleepModeEnabled = UserDefaults.standard.bool(forKey: "isSleepModeEnabled")
-        self.isPremium = UserDefaults.standard.bool(forKey: "isPremium")
 
         self.selectedSoundID = UserDefaults.standard.string(forKey: "selectedSoundID") ?? "rain"
         self.selectedThemeID = UserDefaults.standard.string(forKey: "selectedThemeID") ?? "blue"
@@ -130,7 +123,7 @@ class UserManager {
         Medal(id: "week_streak", name: "Week Streak", description: "Pause for 7 days in a row", icon: "flame.fill", requiredMinutes: 0),
         Medal(id: "early_bird", name: "Early Bird", description: "Complete a pause between 6 AM and 9 AM", icon: "sunrise.fill", requiredMinutes: 0),
         Medal(id: "night_owl", name: "Night Owl", description: "Complete a pause after 10 PM", icon: "moon.stars.fill", requiredMinutes: 0),
-        Medal(id: "supporter", name: "Supporter", description: "Support Calm by going Plus", icon: "heart.fill", requiredMinutes: 0),
+        Medal(id: "supporter", name: "Supporter", description: "Thank you for supporting Sileo.", icon: "heart.fill", requiredMinutes: 0),
         Medal(id: "marathoner", name: "Marathoner", description: "Complete a single 30-minute session", icon: "figure.run", requiredMinutes: 0),
         Medal(id: "guru", name: "Guru", description: "Reach 1000 minutes of total peace", icon: "star.circle.fill", requiredMinutes: 1000),
         Medal(id: "consistent", name: "Consistent", description: "Pause for 3 days in a row", icon: "checkmark.seal.fill", requiredMinutes: 0)
@@ -149,8 +142,8 @@ class UserManager {
         case "guru": return totalMin >= 1000
         case "week_streak": return streak >= 7
         case "consistent": return streak >= 3
-        case "supporter": return isPremium
-            
+        case "supporter": return true
+
         case "early_bird":
             return sessions.contains { session in
                 let hour = Calendar.current.component(.hour, from: session.date)
@@ -191,7 +184,4 @@ class UserManager {
         else if totalMin < 300 { return "Thinker" }
         else { return "Guru" }
     }
-    
-    func resetSubscription() { isPremium = false }
-    func buyPremium() { isPremium = true }
 }

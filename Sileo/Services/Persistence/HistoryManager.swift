@@ -12,15 +12,19 @@ class HistoryManager {
     private(set) var currentStreak: Int = 0
 
     private var dailyDataCache: [String: DailyData] = [:]
-    
+
+    private static let keyFormatter: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyy-MM-dd"
+        return formatter
+    }()
+
     private init() {
         loadEverythingFromDisk()
     }
-    
+
     private func dateKey(for date: Date) -> String {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "yyyy-MM-dd"
-        return formatter.string(from: date)
+        Self.keyFormatter.string(from: date)
     }
     
     // MARK: - Core Logic
@@ -56,10 +60,8 @@ class HistoryManager {
         if let encoded = try? JSONEncoder().encode(currentData) {
             UserDefaults.standard.set(encoded, forKey: key)
         }
-
         history.insert(newSession, at: 0)
-        history.sort { $0.date > $1.date }
-        
+
         totalLifetimeMinutes += minutes
         calculateStreak()
     }
@@ -105,10 +107,12 @@ class HistoryManager {
             let data = getData(for: checkDate)
             if data.totalMinutes > 0 {
                 streak += 1
-                checkDate = calendar.date(byAdding: .day, value: -1, to: checkDate)!
+                guard let previous = calendar.date(byAdding: .day, value: -1, to: checkDate) else { break }
+                checkDate = previous
             } else {
                 if calendar.isDateInToday(checkDate) {
-                    checkDate = calendar.date(byAdding: .day, value: -1, to: checkDate)!
+                    guard let previous = calendar.date(byAdding: .day, value: -1, to: checkDate) else { break }
+                    checkDate = previous
                     let yesterdayData = getData(for: checkDate)
                     if yesterdayData.totalMinutes == 0 {
                         break

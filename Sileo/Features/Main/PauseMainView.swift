@@ -13,7 +13,6 @@ struct PauseMainView: View {
             StandardInterfaceView(engine: engine)
         }
         .onChange(of: engine.state) { _, _ in updateIdleTimer() }
-        .task { await StoreManager.shared.checkSubscriptionStatus() }
         .onDisappear {
             UIApplication.shared.isIdleTimerDisabled = false
         }

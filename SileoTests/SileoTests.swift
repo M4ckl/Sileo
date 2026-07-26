@@ -44,7 +44,6 @@ struct DateExtensionTests {
 @MainActor
 struct HistoryManagerTests {
 
-    /// Добавление сессии должно увеличивать историю и суммарное время.
     @Test func addSessionUpdatesHistoryAndTotals() {
         let manager = HistoryManager.shared
         manager.clearAll()
@@ -55,7 +54,6 @@ struct HistoryManagerTests {
         #expect(manager.history.count == 2)
         #expect(manager.totalLifetimeMinutes == 15)
 
-        // Данные за сегодня должны агрегироваться корректно.
         let today = manager.getData(for: Date())
         #expect(today.totalMinutes == 15)
         #expect(today.sessionsCount == 2)
@@ -63,7 +61,6 @@ struct HistoryManagerTests {
         manager.clearAll()
     }
 
-    /// clearAll должен полностью обнулять состояние.
     @Test func clearAllResetsState() {
         let manager = HistoryManager.shared
         manager.addSession(minutes: 20)

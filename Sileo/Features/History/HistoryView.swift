@@ -221,7 +221,6 @@ struct HistoryView: View {
     }
     
     // MARK: - Helper Methods
-    
     func generateMonths() {
         let now = Date()
         let calendar = Calendar.current

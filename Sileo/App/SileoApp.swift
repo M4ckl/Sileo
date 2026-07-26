@@ -28,11 +28,7 @@ struct SileoApp: App {
             .environment(userManager)
             .preferredColorScheme(isDarkMode ? .dark : .light)
             .animation(.easeInOut(duration: 0.5), value: isDarkMode)
-            .animation(.easeInOut(duration: 0.8), value: hasSeenOnboarding) // Плавное исчезновение онбординга
-            .task {
-                await StoreManager.shared.checkSubscriptionStatus()
-                await StoreManager.shared.loadProducts()
-            }
+            .animation(.easeInOut(duration: 0.8), value: hasSeenOnboarding)
         }
     }
 }

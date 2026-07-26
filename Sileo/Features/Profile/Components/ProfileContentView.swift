@@ -2,10 +2,8 @@ import SwiftUI
 
 struct ProfileContentView: View {
     @Binding var isDarkMode: Bool
-    
+
     @Binding var navigateToAchievements: Bool
-    @Binding var navigateToPaywall: Bool
-    @Binding var navigateToManageSubscription: Bool
     @Binding var showSounds: Bool
     @Binding var showThemes: Bool
     
@@ -29,7 +27,7 @@ struct ProfileContentView: View {
                         HStack(spacing: 20) {
                             ZStack {
                                 Circle().fill(theme.accentColor.opacity(0.1)).frame(width: 80, height: 80)
-                                Image(userManager.isPremium ? "calmplus" : "calm")
+                                Image("calmplus")
                                     .resizable().renderingMode(.template)
                                     .aspectRatio(contentMode: .fit)
                                     .frame(width: 48, height: 48)
@@ -42,11 +40,11 @@ struct ProfileContentView: View {
                                         .font(.system(size: 24, weight: .bold, design: .rounded))
                                         .foregroundColor(theme.textColor)
                                     
-                                    Text(userManager.isPremium ? "CALM PLUS" : "CALM")
+                                    Text("CALM PLUS")
                                         .font(.system(size: 10, weight: .bold, design: .rounded))
                                         .foregroundStyle(Color.white)
                                         .padding(.vertical, 4).padding(.horizontal, 8)
-                                        .background(userManager.isPremium ? theme.accentColor : Color.black.opacity(0.2))
+                                        .background(theme.accentColor)
                                         .clipShape(Capsule())
                                 }
                                 
@@ -105,35 +103,8 @@ struct ProfileContentView: View {
                     .background(Color.white.opacity(colorScheme == .dark ? 0.1 : 1))
                     .cornerRadius(30)
                     .padding(.horizontal, 20)
-                    
-                    // Subscription
-                    if !userManager.isPremium {
-                        Button(action: { navigateToPaywall = true }) {
-                            HStack {
-                                Text("Upgrade to Calm Plus").font(.system(size: 16, weight: .medium, design: .rounded)).foregroundColor(theme.textColor)
-                                Spacer()
-                                Text("$0.99").font(.system(size: 16, weight: .medium, design: .rounded)).foregroundColor(theme.textColor.opacity(0.3))
-                            }
-                            .padding(20)
-                            .background(Color.white.opacity(colorScheme == .dark ? 0.1 : 1))
-                            .cornerRadius(30)
-                            .padding(.horizontal, 20)
-                        }
-                    } else {
-                        Button(action: { navigateToManageSubscription = true }) {
-                            HStack {
-                                Text("Manage Subscription").font(.system(size: 16, weight: .medium, design: .rounded)).foregroundColor(theme.textColor)
-                                Spacer()
-                                Image(systemName: "chevron.right").font(.system(size: 14, weight: .bold)).foregroundColor(theme.textColor.opacity(0.3))
-                            }
-                            .padding(20)
-                            .background(Color.white.opacity(colorScheme == .dark ? 0.1 : 1))
-                            .cornerRadius(30)
-                            .padding(.horizontal, 20)
-                        }
-                    }
                 }
-                
+
                 Spacer(minLength: 0)
                 
                 // Bottom Bar

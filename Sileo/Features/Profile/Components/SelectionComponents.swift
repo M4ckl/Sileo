@@ -41,8 +41,7 @@ struct SoundListView: View {
     @Bindable var previewManager: SoundPreviewManager
     
     var body: some View {
-        ForEach(Array(UserManager.shared.sounds.enumerated()), id: \.element.id) { index, sound in
-            let isLocked = !UserManager.shared.isPremium && index >= 3
+        ForEach(UserManager.shared.sounds) { sound in
             let isSelected = UserManager.shared.selectedSoundID == sound.id
             let isPlaying = previewManager.playingSoundID == sound.id
             
@@ -71,19 +70,14 @@ struct SoundListView: View {
                         }
                         .frame(width: 44, height: 44)
                     }
-                    .disabled(isLocked)
-                    
+
                     Text(sound.name)
                         .font(.system(size: 16, weight: .medium, design: .rounded))
-                        .foregroundColor(isLocked ? .gray : theme.textColor)
-                    
+                        .foregroundColor(theme.textColor)
+
                     Spacer()
-                    
-                    if isLocked {
-                        Image(systemName: "lock.fill")
-                            .foregroundColor(theme.textColor.opacity(0.3))
-                            .padding(.trailing, 20)
-                    } else if isSelected {
+
+                    if isSelected {
                         Image(systemName: "checkmark.circle.fill")
                             .font(.title3)
                             .foregroundColor(theme.accentColor)
@@ -101,12 +95,9 @@ struct SoundListView: View {
             )
             .contentShape(Rectangle())
             .onTapGesture {
-                if !isLocked {
-                    UserManager.shared.selectedSoundID = sound.id
-                    dismiss()
-                }
+                UserManager.shared.selectedSoundID = sound.id
+                dismiss()
             }
-            .opacity(isLocked ? 0.6 : 1.0)
         }
     }
 }
@@ -117,31 +108,26 @@ struct ThemeListView: View {
     @Environment(\.colorScheme) var colorScheme
     
     var body: some View {
-        ForEach(Array(UserManager.shared.themes.enumerated()), id: \.element.id) { index, itemTheme in
+        ForEach(UserManager.shared.themes) { itemTheme in
             let isSelected = UserManager.shared.selectedThemeID == itemTheme.id
-            let isLocked = !UserManager.shared.isPremium && index >= 2
-            
+
             Button(action: {
-                if !isLocked {
-                    UserManager.shared.selectedThemeID = itemTheme.id
-                    dismiss()
-                }
+                UserManager.shared.selectedThemeID = itemTheme.id
+                dismiss()
             }) {
                 HStack(spacing: 15) {
                     RoundedRectangle(cornerRadius: 30)
                         .fill(itemTheme.gradient)
                         .frame(width: 40, height: 40)
                         .overlay(RoundedRectangle(cornerRadius: 30).stroke(Color.white.opacity(0.2), lineWidth: 1))
-                    
+
                     Text(itemTheme.name)
                         .font(.system(size: 16, weight: .medium, design: .rounded))
-                        .foregroundColor(isLocked ? .gray : theme.textColor)
-                    
+                        .foregroundColor(theme.textColor)
+
                     Spacer()
-                    
-                    if isLocked {
-                        Image(systemName: "lock.fill").foregroundColor(theme.textColor.opacity(0.3)).padding(.trailing, 8)
-                    } else if isSelected {
+
+                    if isSelected {
                         Image(systemName: "checkmark.circle.fill").font(.title3).foregroundColor(theme.accentColor).padding(.trailing, 8)
                     }
                 }
@@ -150,7 +136,6 @@ struct ThemeListView: View {
                 .cornerRadius(30)
                 .overlay(RoundedRectangle(cornerRadius: 30).stroke(isSelected ? theme.accentColor : Color.clear, lineWidth: 2))
             }
-            .disabled(isLocked)
         }
     }
 }
