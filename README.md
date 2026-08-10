@@ -1,5 +1,5 @@
 <p align="center">
-  
+  <img width="80" height="80" alt="icon_sileo" src="https://github.com/user-attachments/assets/48cd4066-a74d-4a30-b618-0e4df319dc02" />
 </p>
 
 <h1 align="center">Sileo</h1>
