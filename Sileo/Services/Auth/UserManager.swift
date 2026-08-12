@@ -5,10 +5,6 @@ import Observation
 class UserManager {
     static let shared = UserManager()
 
-    var isSleepModeEnabled: Bool {
-        didSet { UserDefaults.standard.set(isSleepModeEnabled, forKey: "isSleepModeEnabled") }
-    }
-
     var selectedSoundID: String {
         didSet { UserDefaults.standard.set(selectedSoundID, forKey: "selectedSoundID") }
     }
@@ -18,8 +14,6 @@ class UserManager {
     }
 
     private init() {
-        self.isSleepModeEnabled = UserDefaults.standard.bool(forKey: "isSleepModeEnabled")
-
         self.selectedSoundID = UserDefaults.standard.string(forKey: "selectedSoundID") ?? "rain"
         self.selectedThemeID = UserDefaults.standard.string(forKey: "selectedThemeID") ?? "blue"
     }

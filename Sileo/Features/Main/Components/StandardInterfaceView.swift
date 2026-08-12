@@ -15,7 +15,6 @@ struct StandardInterfaceView: View {
         ZStack {
             BackgroundView()
                 .scaleEffect(isBreathing ? 1.1 : 1.0)
-                // Анимация дыхания
                 .animation(isBreathing ? .easeInOut(duration: 6).repeatForever(autoreverses: true) : .easeOut(duration: 1.5), value: isBreathing)
                 .ignoresSafeArea()
             

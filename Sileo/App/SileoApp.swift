@@ -1,14 +1,7 @@
 import SwiftUI
 
-class AppDelegate: NSObject, UIApplicationDelegate {
-    func application(_ application: UIApplication, supportedInterfaceOrientationsFor window: UIWindow?) -> UIInterfaceOrientationMask {
-        return .portrait
-    }
-}
-
 @main
 struct SileoApp: App {
-    @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
 
     @State private var userManager = UserManager.shared
     @AppStorage("isDarkMode") private var isDarkMode = false

@@ -1,5 +1,3 @@
-import Observation
-
 struct Medal: Identifiable {
     let id: String
     let name: String
