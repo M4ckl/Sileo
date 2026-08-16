@@ -1,6 +1,13 @@
 import Foundation
 
 extension Date {
+    
+    private static let monthYearFormatter: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "MMMM yyyy"
+        return formatter
+    }()
+    
     func getAllMonthDates() -> [Date] {
         let calendar = Calendar.current
         let components = calendar.dateComponents([.year, .month], from: self)
@@ -22,12 +29,6 @@ extension Date {
     func isSameMonth(as date: Date) -> Bool {
         Calendar.current.isDate(self, equalTo: date, toGranularity: .month)
     }
-
-    private static let monthYearFormatter: DateFormatter = {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "MMMM yyyy"
-        return formatter
-    }()
 
     func monthYearString() -> String {
         Self.monthYearFormatter.string(from: self)
