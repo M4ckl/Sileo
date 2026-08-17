@@ -1,7 +1,17 @@
-import SwiftUI
+import Foundation
+import SwiftData
 
-struct PauseSession: Codable, Identifiable {
-    let id: UUID
-    let date: Date
-    let durationMinutes: Int
+@Model
+class PauseSession {
+    var id: UUID
+    var date: Date
+    var durationMinutes: Int
+    
+    var dailyData: DailyData?
+    
+    init(id: UUID = UUID(), date: Date, durationMinutes: Int) {
+        self.id = id
+        self.date = date
+        self.durationMinutes = durationMinutes
+    }
 }

@@ -39,13 +39,13 @@ struct DateExtensionTests {
 struct HistoryManagerTests {
 
     @Test func addSessionUpdatesHistoryAndTotals() {
-        let manager = HistoryManager.shared
+        let manager = HistoryViewModel.shared
         manager.clearAll()
 
         manager.addSession(minutes: 10)
         manager.addSession(minutes: 5)
 
-        #expect(manager.history.count == 2)
+        #expect(manager.getAllSessions().count == 2)
         #expect(manager.totalLifetimeMinutes == 15)
 
         let today = manager.getData(for: Date())
@@ -56,12 +56,12 @@ struct HistoryManagerTests {
     }
 
     @Test func clearAllResetsState() {
-        let manager = HistoryManager.shared
+        let manager = HistoryViewModel.shared
         manager.addSession(minutes: 20)
 
         manager.clearAll()
 
-        #expect(manager.history.isEmpty)
+        #expect(manager.getAllSessions().isEmpty)
         #expect(manager.totalLifetimeMinutes == 0)
         #expect(manager.currentStreak == 0)
     }
