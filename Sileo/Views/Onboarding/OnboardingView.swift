@@ -43,9 +43,13 @@ struct OnboardingView: View {
             }
         }
         .onAppear {
-            DispatchQueue.main.asyncAfter(deadline: .now() + 7.5) {
-                withAnimation(.spring(response: 0.8, dampingFraction: 0.8)) {
-                    showButton = true
+            Task {
+                try? await Task.sleep(nanoseconds: 7_500_000_000)
+                
+                await MainActor.run {
+                    withAnimation(.spring(response: 0.8, dampingFraction: 0.8)) {
+                        showButton = true
+                    }
                 }
             }
         }

@@ -13,9 +13,14 @@ struct StandardInterfaceView: View {
     
     var body: some View {
         ZStack {
-            BackgroundView(theme: settingManager.getCurrentTheme())
+            BackgroundView(theme: theme)
                 .scaleEffect(isBreathing ? 1.1 : 1.0)
-                .animation(isBreathing ? .easeInOut(duration: 6).repeatForever(autoreverses: true) : .easeOut(duration: 1.5), value: isBreathing)
+                .animation(
+                    isBreathing
+                    ? .easeInOut(duration: 6).delay(0.1).repeatForever(autoreverses: true)
+                    : .easeOut(duration: 1.5),
+                    value: isBreathing
+                )
                 .ignoresSafeArea()
             
             VStack {
@@ -37,14 +42,9 @@ struct StandardInterfaceView: View {
         .fullScreenCover(isPresented: $showProfile) { NavigationStack { ProfileView() } }
         .onChange(of: engine.state) { _, newState in
             if newState == .running {
-                Task {
-                    try? await Task.sleep(nanoseconds: 100_000_000)
-                    await MainActor.run {
-                        withAnimation { isBreathing = true }
-                    }
-                }
+                isBreathing = true
             } else if newState == .idle || newState == .finished {
-                withAnimation { isBreathing = false }
+                isBreathing = false
             }
         }
     }

@@ -12,13 +12,8 @@ struct PauseMainView: View {
         ZStack {
             StandardInterfaceView(engine: engine)
         }
-        .onChange(of: engine.state) { _, _ in updateIdleTimer() }
         .onDisappear {
             UIApplication.shared.isIdleTimerDisabled = false
         }
-    }
-    
-    func updateIdleTimer() {
-        UIApplication.shared.isIdleTimerDisabled = (engine.state == .running)
     }
 }

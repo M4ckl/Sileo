@@ -47,6 +47,8 @@ class PauseViewModel {
         audioService.play(filename: settingManager.getCurrentSound().filename)
         startTimer()
         
+        UIApplication.shared.isIdleTimerDisabled = true
+        
         return true
     }
     
@@ -64,12 +66,15 @@ class PauseViewModel {
             haptic.prepare()
             haptic.impactOccurred(intensity: 0.6)
             
+            UIApplication.shared.isIdleTimerDisabled = false
+            
         } else if state == .paused {
             targetEndDate = Date().addingTimeInterval(TimeInterval(remainingSeconds))
             audioService.play(filename: settingManager.getCurrentSound().filename)
             startTimer()
-            
             state = .running
+            
+            UIApplication.shared.isIdleTimerDisabled = true
         }
         
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) { [weak self] in
@@ -97,6 +102,8 @@ class PauseViewModel {
         state = .idle
         progress = 0
         remainingSeconds = 0
+        
+        UIApplication.shared.isIdleTimerDisabled = false
     }
       
     private func startTimer() {
@@ -130,6 +137,8 @@ class PauseViewModel {
         HistoryViewModel.shared.addSession(minutes: selectedMinutes)
         
         state = .finished
+        
+        UIApplication.shared.isIdleTimerDisabled = false
         
         notification.prepare()
         notification.notificationOccurred(.success)

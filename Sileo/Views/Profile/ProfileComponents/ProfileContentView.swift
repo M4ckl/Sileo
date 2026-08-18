@@ -13,6 +13,7 @@ struct ProfileContentView: View {
     @Environment(\.colorScheme) var colorScheme
     @Environment(SettingsViewModel.self) var settingManager
     @Environment(GamificationViewModel.self) var gamingManager
+    @Environment(HistoryViewModel.self) var historyManager
     
     var body: some View {
         ZStack {
@@ -23,7 +24,6 @@ struct ProfileContentView: View {
                 Spacer().frame(height: 20)
                 
                 VStack(spacing: 16) {
-                    // Header
                     VStack(spacing: 0) {
                         HStack(spacing: 20) {
                             ZStack {
@@ -49,7 +49,7 @@ struct ProfileContentView: View {
                                         .clipShape(Capsule())
                                 }
                                 
-                                Text("\(HistoryViewModel.shared.totalLifetimeMinutes) min total")
+                                Text("\(historyManager.totalLifetimeMinutes) min total")
                                     .font(.system(size: 14, weight: .medium, design: .rounded))
                                     .foregroundColor(.gray)
                             }
@@ -67,7 +67,6 @@ struct ProfileContentView: View {
                     .cornerRadius(30)
                     .padding(.horizontal, 20)
                     
-                    // Settings
                     VStack(spacing: 0) {
                         Button(action: { showSounds = true }) {
                             SettingsRow(icon: "speaker.wave.2.fill", title: "Sound", value: settingManager.getCurrentSound().name, theme: theme)
@@ -80,7 +79,7 @@ struct ProfileContentView: View {
                                 Text("Theme").font(.system(size: 16, weight: .medium, design: .rounded)).foregroundColor(theme.textColor)
                                 Spacer()
                                 HStack(spacing: 8) {
-                                    Text(settingManager.getCurrentTheme().name).font(.system(size: 16, weight: .medium, design: .rounded)).foregroundColor(settingManager.getCurrentTheme().accentColor)
+                                    Text(theme.name).font(.system(size: 16, weight: .medium, design: .rounded)).foregroundColor(theme.accentColor)
                                 }
                                 Image(systemName: "chevron.right").font(.system(size: 14, weight: .bold)).foregroundColor(theme.textColor.opacity(0.3))
                             }
@@ -91,7 +90,6 @@ struct ProfileContentView: View {
                     .cornerRadius(30)
                     .padding(.horizontal, 20)
                     
-                    // Dark Mode Toggle
                     HStack {
                         Image(systemName: "moon.fill").foregroundColor(theme.textColor.opacity(0.3))
                         Text("Dark Mode").font(.system(size: 16, weight: .medium, design: .rounded)).foregroundColor(theme.textColor)
@@ -108,7 +106,6 @@ struct ProfileContentView: View {
 
                 Spacer(minLength: 0)
                 
-                // Bottom Bar
                 HStack {
                     Button(action: { dismissAction() }) {
                         HStack(spacing: 4) {

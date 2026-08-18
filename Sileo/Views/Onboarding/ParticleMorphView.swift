@@ -86,7 +86,7 @@ struct ParticleMorphView: View {
     }
     
     private func generateParticles() {
-        DispatchQueue.global(qos: .userInitiated).async {
+        Task.detached(priority: .userInitiated) {
             let targetCount = 2800
             let canvasSize = CGSize(width: 600, height: 600)
             
@@ -104,8 +104,8 @@ struct ParticleMorphView: View {
             attr2.addAttribute(.font, value: UIFont.systemFont(ofSize: 50, weight: .semibold), range: pauseRange)
             attr2.addAttribute(.tracking, value: 1.5, range: pauseRange)
             
-            let pts1 = self.extractPoints(from: attr1, canvasSize: canvasSize, targetCount: targetCount)
-            let pts2 = self.extractPoints(from: attr2, canvasSize: canvasSize, targetCount: targetCount)
+            let pts1 = await self.extractPoints(from: attr1, canvasSize: canvasSize, targetCount: targetCount)
+            let pts2 = await self.extractPoints(from: attr2, canvasSize: canvasSize, targetCount: targetCount)
             
             var spherePts: [Vector3] = []
             let sphereRadius: CGFloat = 135
@@ -130,7 +130,7 @@ struct ParticleMorphView: View {
             
             let shuffled = newParticles.shuffled()
             
-            DispatchQueue.main.async {
+            await MainActor.run {
                 self.particles = shuffled
                 self.startTime = Date()
             }
@@ -139,20 +139,23 @@ struct ParticleMorphView: View {
     
     private func extractPoints(from attrStr: NSAttributedString, canvasSize: CGSize, targetCount: Int) -> [Vector3] {
         
-        UIGraphicsBeginImageContextWithOptions(canvasSize, false, 1.0)
+        let format = UIGraphicsImageRendererFormat()
+        format.scale = 1.0
+        format.preferredRange = .standard
         
-        let textRect = attrStr.boundingRect(with: canvasSize, options: .usesLineFragmentOrigin, context: nil)
-        let drawRect = CGRect(
-            x: (canvasSize.width - textRect.width) / 2,
-            y: (canvasSize.height - textRect.height) / 2,
-            width: textRect.width,
-            height: textRect.height
-        )
-        attrStr.draw(in: drawRect)
-        let image = UIGraphicsGetImageFromCurrentImageContext()
-        UIGraphicsEndImageContext()
+        let renderer = UIGraphicsImageRenderer(size: canvasSize, format: format)
+        let image = renderer.image { context in
+            let textRect = attrStr.boundingRect(with: canvasSize, options: .usesLineFragmentOrigin, context: nil)
+            let drawRect = CGRect(
+                x: (canvasSize.width - textRect.width) / 2,
+                y: (canvasSize.height - textRect.height) / 2,
+                width: textRect.width,
+                height: textRect.height
+            )
+            attrStr.draw(in: drawRect)
+        }
         
-        guard let cgImage = image?.cgImage,
+        guard let cgImage = image.cgImage,
               let data = cgImage.dataProvider?.data,
               let bytes = CFDataGetBytePtr(data) else { return [] }
         

@@ -13,8 +13,8 @@ struct HistoryView: View {
         let components = Calendar.current.dateComponents([.year, .month], from: Date())
         return Calendar.current.date(from: components)!
     }()
-    @State private var monthsList: [Date] = []
     
+    @State private var monthsList: [Date] = HistoryViewModel.shared.generateMonthsList()
     @State private var showWheelPicker = false
     @State private var currentStatsPage = 0
     
@@ -70,9 +70,6 @@ struct HistoryView: View {
             .safeAreaPadding(.bottom)
         }
         .navigationBarHidden(true)
-        .onAppear {
-            if monthsList.isEmpty { generateMonths() }
-        }
         .sheet(isPresented: $showWheelPicker) {
             WheelPickerSheet(currentMonth: $currentMonth, theme: theme)
         }
@@ -102,24 +99,5 @@ struct HistoryView: View {
             }
         }
         .padding(.horizontal, 20)
-    }
-    
-    func generateMonths() {
-        let now = Date()
-        let calendar = Calendar.current
-        guard let start = calendar.date(byAdding: .year, value: -5, to: now),
-              let end = calendar.date(byAdding: .year, value: 2, to: now) else { return }
-        
-        var date = start
-        var res: [Date] = []
-        
-        let components = calendar.dateComponents([.year, .month], from: date)
-        date = calendar.date(from: components)!
-        
-        while date <= end {
-            res.append(date)
-            date = calendar.date(byAdding: .month, value: 1, to: date)!
-        }
-        monthsList = res
     }
 }

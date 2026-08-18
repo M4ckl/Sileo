@@ -77,6 +77,30 @@ class HistoryViewModel {
         currentStreak = 0
     }
     
+    func getAllSessions() -> [PauseSession] {
+        let descriptor = FetchDescriptor<PauseSession>()
+        return (try? context.fetch(descriptor)) ?? []
+    }
+    
+    func generateMonthsList() -> [Date] {
+        let now = Date()
+        let calendar = Calendar.current
+        guard let start = calendar.date(byAdding: .year, value: -5, to: now),
+              let end = calendar.date(byAdding: .year, value: 2, to: now) else { return [] }
+        
+        var date = start
+        var res: [Date] = []
+        
+        let components = calendar.dateComponents([.year, .month], from: date)
+        date = calendar.date(from: components)!
+        
+        while date <= end {
+            res.append(date)
+            date = calendar.date(byAdding: .month, value: 1, to: date)!
+        }
+        return res
+    }
+    
     private func loadInitialStats() {
         let descriptor = FetchDescriptor<DailyData>()
         if let allDays = try? context.fetch(descriptor) {
@@ -107,11 +131,5 @@ class HistoryViewModel {
         }
         
         self.currentStreak = streak
-    }
-    
-    func getAllSessions() -> [PauseSession] {
-        // Просим базу данных выдать вообще все сессии, которые в ней есть
-        let descriptor = FetchDescriptor<PauseSession>()
-        return (try? context.fetch(descriptor)) ?? []
     }
 }

@@ -38,11 +38,12 @@ struct SoundListView: View {
     let theme: AppTheme
     @Environment(\.dismiss) var dismiss
     @Environment(\.colorScheme) var colorScheme
+    @Environment(SettingsViewModel.self) var settingManager
     @Bindable var previewManager: SoundPreviewViewModel
     
     var body: some View {
         ForEach(AppSound.all) { sound in
-            let isSelected = SettingsViewModel.shared.selectedSoundID == sound.id
+            let isSelected = settingManager.selectedSoundID == sound.id
             let isPlaying = previewManager.playingSoundID == sound.id
             
             ZStack(alignment: .leading) {
@@ -95,7 +96,7 @@ struct SoundListView: View {
             )
             .contentShape(Rectangle())
             .onTapGesture {
-                SettingsViewModel.shared.selectedSoundID = sound.id
+                settingManager.selectedSoundID = sound.id
                 dismiss()
             }
         }
@@ -106,13 +107,14 @@ struct ThemeListView: View {
     let theme: AppTheme
     @Environment(\.dismiss) var dismiss
     @Environment(\.colorScheme) var colorScheme
+    @Environment(SettingsViewModel.self) var settingManager
     
     var body: some View {
         ForEach(AppTheme.all) { itemTheme in
-            let isSelected = SettingsViewModel.shared.selectedThemeID == itemTheme.id
+            let isSelected = settingManager.selectedThemeID == itemTheme.id
 
             Button(action: {
-                SettingsViewModel.shared.selectedThemeID = itemTheme.id
+                settingManager.selectedThemeID = itemTheme.id
                 dismiss()
             }) {
                 HStack(spacing: 15) {
